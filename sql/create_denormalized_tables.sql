@@ -121,38 +121,65 @@ create table map2_procedure_occurrence as
         join map2_person p on t.person_id = p.person_id) tt;
 --638557 rows affected  
 
-drop table if exists map2_observation;
-create table map2_observation as 
-select o.*,
-      cast(cast(o.observation_date as varchar(10)) || ' ' || o.observation_time as timestamp) as observation_datetime,
-      c1.concept_name as observation_source_concept_name, 
-      c1.concept_code as observation_source_concept_code,
-      c1.vocabulary_id as source_vocabulary_id,
-      c2.concept_name as observation_concept_name, 
-      c2.concept_code as observation_concept_code,
-      c2.vocabulary_id as concept_vocabulary_id,
-      c3.concept_name as value_as_concept_name,
-      c3.concept_code as value_as_concept_code,
-      c3.vocabulary_id as value_as_concept_vocabulary_id,
-      c4.concept_name as unit_concept_name,
-      c4.concept_code as unit_concept_code,
-      c4.vocabulary_id as unit_concept_vocabulary_id,
-      c5.concept_name as qualifier_concept_name
-from observation o
-join concept c1 on o.observation_source_concept_id = c1.concept_id
-join concept c2 on o.observation_concept_id = c2.concept_id
-left outer join concept c3 on o.value_as_concept_id = c3.concept_id
-left outer join concept c4 on o.unit_concept_id = c4.concept_id 
-left outer join concept c5 on o.qualifier_concept_id = c5.concept_id;
+select count(*) from observation;
+--2,388,529
 
 
 drop table if exists map2_observation;
-create table map2_observation as 
+create table map2_observation as
+select tt.*,
+  floor(tt.observation_age_in_years_fraction) as observation_age_in_years_int
+from (
+  select t.*, 
+    (t.observation_julian_day - p.birth_julian_day) / 365.25 as observation_age_in_years_fraction, 
+    (t.observation_julian_day - p.birth_julian_day) as observation_age_in_days from (
+    select o.*,
+          cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
+          cast(cast(o.observation_date as varchar(10)) || ' ' || o.observation_time as timestamp) as observation_datetime,
+          c1.concept_name as observation_source_concept_name, 
+          c1.concept_code as observation_source_concept_code,
+          c1.vocabulary_id as source_vocabulary_id,
+          c2.concept_name as observation_concept_name, 
+          c2.concept_code as observation_concept_code,
+          c2.vocabulary_id as concept_vocabulary_id,
+          c3.concept_name as value_as_concept_name,
+          c3.concept_code as value_as_concept_code,
+          c3.vocabulary_id as value_as_concept_vocabulary_id,
+          c4.concept_name as unit_concept_name,
+          c4.concept_code as unit_concept_code,
+          c4.vocabulary_id as unit_concept_vocabulary_id,
+          c5.concept_name as qualifier_concept_name
+    from observation o
+    join concept c1 on o.observation_source_concept_id = c1.concept_id
+    join concept c2 on o.observation_concept_id = c2.concept_id
+    left outer join concept c3 on o.value_as_concept_id = c3.concept_id
+    left outer join concept c4 on o.unit_concept_id = c4.concept_id 
+    left outer join concept c5 on o.qualifier_concept_id = c5.concept_id) t
+   join map2_person p on t.person_id = p.person_id) tt
+;
+
+select count(*) from map2_observation;
+--2,388,529
+
+
+select count(*) from measurement;
+--9438251
+
+drop table if exists map2_measurement;
+create table map2_measurement as 
+select tt.*,
+  floor(tt.measurement_age_in_years_fraction) as measurement_age_in_years_int
+from (
+  select t.*, 
+    (t.measurement_julian_day - p.birth_julian_day) / 365.25 as measurement_age_in_years_fraction, 
+    (t.measurement_julian_day - p.birth_julian_day) as measurement_age_in_days
+  from (
   select m.*,
+        cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
         cast(cast(m.measurement_date as varchar(10)) || ' ' || m.measurement_time as timestamp) as measurement_datetime,
         c1.concept_name as measurement_source_concept_name, 
         c1.concept_code as measurement_source_concept_code,
-        c1.vocabulary_id as source_vocabulary_id,S
+        c1.vocabulary_id as source_vocabulary_id,
         c2.concept_name as measurement_concept_name, 
         c2.concept_code as measurement_concept_code,
         c2.vocabulary_id as concept_vocabulary_id,
@@ -168,31 +195,50 @@ create table map2_observation as
   join concept c2 on m.measurement_concept_id = c2.concept_id
   left outer join concept c3 on m.value_as_concept_id = c3.concept_id
   left outer join concept c4 on m.unit_concept_id = c4.concept_id 
-  left outer join concept c5 on m.operator_concept_id = c5.concept_id;
+  left outer join concept c5 on m.operator_concept_id = c5.concept_id) t
+  join map2_person p on p.person_id = t.person_id) tt
+  ;
 
-  
+select count(*) from map2_measurement;
+--9438251
+
+
+select count(*) from drug_exposure;
+--970755
+ 
 drop table if exists map2_drug_exposure;
 create table map2_drug_exposure as 
-  select de.*,
-    c1.concept_name as drug_concept_source_name,
-    c1.concept_code as drug_concept_source_code,
-    c1.vocabulary_id as drug_concept_source_vocabulary_id,
-    c2.concept_name as drug_concept_name,
-    c2.concept_code as drug_concept_code,
-    c2.vocabulary_id as drug_concept_vocabulary_id,
-    c3.concept_name as drug_type_concept_name,
-    c3.concept_code as drug_type_concept_code,
-    c3.vocabulary_id as drug_type_concept_vocabulary_id,
-    c4.concept_name as route_concept_name,
-    c4.concept_code as route_concept_code,
-    c4.vocabulary_id as route_concept_vocabulary_id,
-    c5.concept_name as unit_concept_name,
-    c5.concept_code as unit_concept_code,
-    c5.vocabulary_id as unit_concept_vocabulary_id
-  from drug_exposure de
-    join concept c1 on c1.concept_id = de.drug_source_concept_id
-    join concept c2 on c2.concept_id = de.drug_concept_id
-    left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
-    left outer join concept c4 on c4.concept_id = de.route_concept_id
-    left outer join concept c5 on c5.concept_id = de.dose_unit_concept_id
+  select tt.*, floor(drug_exposure_start_age_in_years_fraction) as drug_exposure_start_age_in_years_int from (
+    select t.*,
+        (t.drug_exposure_start_julian_day - p.birth_julian_day) / 365.25 as drug_exposure_start_age_in_years_fraction, 
+        (t.drug_exposure_start_julian_day - p.birth_julian_day) as drug_exposure_start_age_in_days
+    from (
+      select de.*,
+        cast(to_char(cast(de.drug_exposure_start_date as date), 'J') as int) as drug_exposure_start_julian_day,
+        cast(to_char(cast(de.drug_exposure_end_date as date), 'J') as int) as drug_exposure_end_julian_day,
+        c1.concept_name as drug_concept_source_name,
+        c1.concept_code as drug_concept_source_code,
+        c1.vocabulary_id as drug_concept_source_vocabulary_id,
+        c2.concept_name as drug_concept_name,
+        c2.concept_code as drug_concept_code,
+        c2.vocabulary_id as drug_concept_vocabulary_id,
+        c3.concept_name as drug_type_concept_name,
+        c3.concept_code as drug_type_concept_code,
+        c3.vocabulary_id as drug_type_concept_vocabulary_id,
+        c4.concept_name as route_concept_name,
+        c4.concept_code as route_concept_code,
+        c4.vocabulary_id as route_concept_vocabulary_id,
+        c5.concept_name as unit_concept_name,
+        c5.concept_code as unit_concept_code,
+        c5.vocabulary_id as unit_concept_vocabulary_id
+      from drug_exposure de
+        join concept c1 on c1.concept_id = de.drug_source_concept_id
+        join concept c2 on c2.concept_id = de.drug_concept_id
+        left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
+        left outer join concept c4 on c4.concept_id = de.route_concept_id
+        left outer join concept c5 on c5.concept_id = de.dose_unit_concept_id
+    ) t join map2_person p on t.person_id = p.person_id) tt 
     ;
+    
+select count(*) from map2_drug_exposure;  
+--970755
