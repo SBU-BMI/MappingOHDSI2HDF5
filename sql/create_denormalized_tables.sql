@@ -30,6 +30,10 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     left outer join concept c3 on c3.concept_id = p.ethnicity_concept_id) t
 ;
 
+select * from map2_person limit 100;
+
+create unique index idx_map2_person_p_id on map2_person(person_id);
+
 select count(*) from map2_person;
 --17950
 
@@ -41,7 +45,7 @@ select count(*) from visit_occurrence;
 
 drop table if exists map2_visit_occurrence;
 create table map2_visit_occurrence as
-select *, floor(age_at_visit_start_in_years_fraction) as age_at_visit_start_in_years_int from (
+select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_visit_start_in_years_int from (
   select tt.*, 
     (visit_start_julian_day - birth_julian_day) / 365.25 as age_at_visit_start_in_years_fraction ,
     visit_start_julian_day - birth_julian_day as age_at_visit_start_in_days
@@ -64,7 +68,14 @@ select *, floor(age_at_visit_start_in_years_fraction) as age_at_visit_start_in_y
         join map2_person mp on mp.person_id = tt.person_id) ttt
         ;
 --344354 rows affected      
-      
+
+create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);      
+
+create table map2_person_visit_occurrence as 
+  select vo.visit_occurrence_id, p.* from visit_occurrence vo
+    join map2_person p on vo.person_id = p.person_id
+;
+
 --TODO: Add caresite
 --TODO: Person Age 
             
@@ -74,7 +85,7 @@ select count(*) from condition_occurrence;
             
 drop table if exists map2_condition_occurrence;
 create table map2_condition_occurrence as
-select *, floor(tt.condition_start_age_in_years_fraction) as condition_start_age_in_years_int from (
+select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condition_start_age_in_years_int from (
   select t.*,  (condition_start_julian_day - p.birth_julian_day) / 365.25 as condition_start_age_in_years_fraction,
     (condition_start_julian_day - p.birth_julian_day) as condition_start_age_in_days
   from (
@@ -92,6 +103,10 @@ select *, floor(tt.condition_start_age_in_years_fraction) as condition_start_age
       join map2_person p on p.person_id = t.person_id) tt
     ;
 --715755 rows affected
+create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);
+
+select * from map2_condition_occurrence limit 100;
+  
   
  select count(*) from procedure_occurrence;
  --638557
@@ -110,9 +125,11 @@ create table map2_procedure_occurrence as
         c2.concept_name as procedure_concept_name, 
         c2.concept_code as procedure_concept_code,
         c2.vocabulary_id as procedure_vocabulary_id,
-        c3.concept_name as modifier_concept_name,
-        c3.concept_code as modifier_concept_code,
-        c3.vocabulary_id as modifier_concept_vocabulary_id
+        c3.concept_name as procedure_type_name,
+        c3.concept_code as procedure_type_code,
+        c4.concept_name as modifier_concept_name,
+        c4.concept_code as modifier_concept_code,
+        c4.vocabulary_id as modifier_concept_vocabulary_id
         from procedure_occurrence po 
         join concept c1 on c1.concept_id = po.procedure_source_concept_id
         join concept c2 on c2.concept_id = po.procedure_concept_id
@@ -121,9 +138,10 @@ create table map2_procedure_occurrence as
         join map2_person p on t.person_id = p.person_id) tt;
 --638557 rows affected  
 
+select * from map2_procedure_occurrence limit 100;
+
 select count(*) from observation;
 --2,388,529
-
 
 drop table if exists map2_observation;
 create table map2_observation as
@@ -161,6 +179,7 @@ from (
 select count(*) from map2_observation;
 --2,388,529
 
+select * from map2_observation limit 100;
 
 select count(*) from measurement;
 --9438251
@@ -202,6 +221,7 @@ from (
 select count(*) from map2_measurement;
 --9438251
 
+select * from map2_measurement limit 100;
 
 select count(*) from drug_exposure;
 --970755
