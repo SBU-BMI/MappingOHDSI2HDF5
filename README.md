@@ -1,8 +1,11 @@
 # MappingOHDSI2HDF5
 
+## Overview
+
 This project contains  JSON mappings for mapping OHDSI (V5) tables to HDF5 
-for machine learning and data mining applications. They use the tool [https://github.com/jhajagos/TransformDBtoHDF5ML] 
-which requires that you have the data in either a SQLite database or a PostGReSQL database.
+for machine learning and data mining applications. They use the tool 
+[https://github.com/jhajagos/TransformDBtoHDF5ML](TransformDBtoHDF5ML) 
+which requires that you have the data in either a SQLite database or a PostGreSQL database.
 The software requires the h5py library to run which is part of the easy to 
 install Anaconda Python distribution.
 
@@ -20,4 +23,9 @@ The mapping of a table are stored in three separate matrices, as an example,
 ```
 The first matrix is of a numeric type and contains the encoded data. 
 The second matrix contains strings and provides annotations or labels of the 
-data, and the third contains the 
+data, and the third contains the labels for the column annotations.
+
+## Mapping to JSON
+
+
+## Mapping to HDF5
