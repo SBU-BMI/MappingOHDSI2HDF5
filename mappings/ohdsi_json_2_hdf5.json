@@ -61,9 +61,9 @@
       "process": "occurs_in_list",
       "field": "procedure_concept_code",
       "name": "inpatient_diagnosis",
-      "label": "condition_concept_code",
-      "cell_value": "condition_concept_code",
-      "description": "condition_concept_name"
+      "label": "procedure_concept_code",
+      "cell_value": "procedure_concept_code",
+      "description": "procedure_concept_name"
     }
 
 ]
