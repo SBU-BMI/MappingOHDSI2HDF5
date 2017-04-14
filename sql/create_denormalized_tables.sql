@@ -30,17 +30,17 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     left outer join concept c3 on c3.concept_id = p.ethnicity_concept_id) t
 ;
 
-select * from map2_person limit 100;
+--select * from map2_person limit 100;
 
 create unique index idx_map2_person_p_id on map2_person(person_id);
 
-select count(*) from map2_person;
+--select count(*) from map2_person;
 --17950
 
 --TODO: left outer join provider
 --TODO: left outer join location
 
-select count(*) from visit_occurrence;
+--select count(*) from visit_occurrence;
 --344354
 
 drop table if exists map2_visit_occurrence;
@@ -79,7 +79,7 @@ create table map2_person_visit_occurrence as
 --TODO: Add caresite
 --TODO: Person Age 
             
-select count(*) from condition_occurrence;            
+--select count(*) from condition_occurrence;
 --715755
 
             
@@ -105,10 +105,10 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
 --715755 rows affected
 create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);
 
-select * from map2_condition_occurrence limit 100;
+--select * from map2_condition_occurrence limit 100;
   
   
- select count(*) from procedure_occurrence;
+ --select count(*) from procedure_occurrence;
  --638557
   
 drop table if exists map2_procedure_occurrence;
@@ -138,9 +138,9 @@ create table map2_procedure_occurrence as
         join map2_person p on t.person_id = p.person_id) tt;
 --638557 rows affected  
 
-select * from map2_procedure_occurrence limit 100;
+--select * from map2_procedure_occurrence limit 100;
 
-select count(*) from observation;
+--select count(*) from observation;
 --2,388,529
 
 drop table if exists map2_observation;
@@ -176,12 +176,12 @@ from (
    join map2_person p on t.person_id = p.person_id) tt
 ;
 
-select count(*) from map2_observation;
+--select count(*) from map2_observation;
 --2,388,529
 
-select * from map2_observation limit 100;
+--select * from map2_observation limit 100;
 
-select count(*) from measurement;
+--select count(*) from measurement;
 --9438251
 
 drop table if exists map2_measurement;
@@ -218,12 +218,12 @@ from (
   join map2_person p on p.person_id = t.person_id) tt
   ;
 
-select count(*) from map2_measurement;
+--select count(*) from map2_measurement;
 --9438251
 
-select * from map2_measurement limit 100;
+--select * from map2_measurement limit 100;
 
-select count(*) from drug_exposure;
+--select count(*) from drug_exposure;
 --970755
  
 drop table if exists map2_drug_exposure;
@@ -260,5 +260,5 @@ create table map2_drug_exposure as
     ) t join map2_person p on t.person_id = p.person_id) tt 
     ;
     
-select count(*) from map2_drug_exposure;  
+--select count(*) from map2_drug_exposure;
 --970755
