@@ -47,13 +47,23 @@
       "type": "variables"},
     {
       "path": ["ohdsi", "condition_occurrence"],
-      "export_path": ["ohdsi", "condition_occurrence", "inpatient_header"],
       "type": "categorical_list",
       "process": "occurs_in_list",
       "field": "condition_concept_code",
+      "name": "condition",
+      "label": "condition_concept_code",
+      "cell_value": "condition_concept_code",
+      "description": "condition_concept_name"
+    },
+    {
+      "path": ["ohdsi", "procedure_occurrence"],
+      "type": "categorical_list",
+      "process": "occurs_in_list",
+      "field": "procedure_concept_code",
       "name": "inpatient_diagnosis",
       "label": "condition_concept_code",
       "cell_value": "condition_concept_code",
       "description": "condition_concept_name"
     }
+
 ]
