@@ -218,6 +218,7 @@ from (
   join map2_person p on p.person_id = t.person_id) tt
   ;
 
+
 --select count(*) from map2_measurement;
 --9438251
 
