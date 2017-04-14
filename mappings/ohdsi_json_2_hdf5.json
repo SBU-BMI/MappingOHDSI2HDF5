@@ -1,1 +1,48 @@
-{}
+[
+    {"path": ["ohdsi", "person"],
+      "variables": [
+         {"cell_value": "ethnicity_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "gender_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value":  "race_concept_name",
+          "type": "categorical"
+         }
+      ],
+      "type": "variables"
+    },
+    {"path": ["ohdsi", "visit_occurrence"],
+      "variables": [
+         {"cell_value": "visit_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "visit_type_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "age_at_visit_start_in_years_int",
+          "type": "integer"
+         },
+         {"cell_value": "age_at_visit_start_in_days",
+          "type": "integer"
+         },
+         {
+          "cell_value": "visit_start_julian_day",
+           "type": "integer"
+         },
+         {
+          "cell_value": "visit_end_julian_day",
+           "type": "integer"
+         },
+         {
+          "cell_value": "visit_start_datetime",
+           "type": "datetime"
+         },
+         {
+          "cell_value": "visit_end_datetime",
+           "type": "datetime"
+         }
+       ],
+      "type": "variables"}
+]
