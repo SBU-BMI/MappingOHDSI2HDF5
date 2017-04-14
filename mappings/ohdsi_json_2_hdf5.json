@@ -46,7 +46,7 @@
        ],
       "type": "variables"},
     {
-      "path": ["ohdsi", "condition_occurrence", "Inpatient header - 1st position"],
+      "path": ["ohdsi", "condition_occurrence"],
       "export_path": ["ohdsi", "condition_occurrence", "inpatient_header"],
       "type": "categorical_list",
       "process": "occurs_in_list",
