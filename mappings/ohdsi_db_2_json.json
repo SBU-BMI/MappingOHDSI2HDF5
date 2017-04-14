@@ -71,8 +71,7 @@
           "name": "condition_occurrence",
           "table_name": "map2_condition_occurrence",
           "path": ["ohdsi"],
-          "type": "one-to-many-class",
-          "group_by_field": "condition_type_name",
+          "type": "one-to-many",
           "fields_to_order_by": ["person_id", "visit_occurrence_id", "condition_type_name", "condition_start_date", "condition_concept_id"],
           "fields_to_include":
                   [
@@ -99,8 +98,7 @@
           "name": "procedure_occurrence",
           "table_name": "map2_procedure_occurrence",
           "path": ["ohdsi"],
-          "type": "one-to-many-class",
-          "group_by_field": "procedure_type_name",
+          "type": "one-to-many",
           "fields_to_order_by": ["person_id", "visit_occurrence_id", "procedure_date", "procedure_concept_id"],
           "fields_to_include":
               [
