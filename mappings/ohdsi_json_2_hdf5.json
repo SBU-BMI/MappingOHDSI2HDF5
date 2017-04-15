@@ -64,6 +64,44 @@
       "label": "procedure_concept_code",
       "cell_value": "procedure_concept_code",
       "description": "procedure_concept_name"
+    },
+    {
+        "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "measurement_concept_id"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "median"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "median",
+                "type": "numeric_list",
+                "cell_value": "value_as_number"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "value_as_concept"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count_categories",
+                "type": "categorical_list",
+                "cell_value": "value_as_concept_name"
+            }
+
     }
 
 ]
