@@ -1,7 +1,7 @@
 { "main_transactions":
   {"table_name": "map2_visit_occurrence",
    "fields_to_order_by": ["person_id", "visit_start_date"],
-    "where_criteria": "visit_concept_name = 'Inpatient Visit'",
+    "where_criteria": null,
     "transaction_id_format": "int",
     "transaction_id": "visit_occurrence_id"
 

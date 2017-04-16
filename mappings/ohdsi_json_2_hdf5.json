@@ -49,20 +49,20 @@
       "path": ["ohdsi", "condition_occurrence"],
       "type": "categorical_list",
       "process": "occurs_in_list",
-      "field": "condition_concept_code",
-      "name": "condition",
-      "label": "condition_concept_code",
-      "cell_value": "condition_concept_code",
+      "field": "condition_concept_id",
+      "name": "condition_concept",
+      "label": "condition_concept_id",
+      "cell_value": "condition_concept_id",
       "description": "condition_concept_name"
     },
     {
       "path": ["ohdsi", "procedure_occurrence"],
       "type": "categorical_list",
       "process": "occurs_in_list",
-      "field": "procedure_concept_code",
-      "name": "inpatient_diagnosis",
-      "label": "procedure_concept_code",
-      "cell_value": "procedure_concept_code",
+      "field": "procedure_concept_id",
+      "name": "procedure_concept",
+      "label": "procedure_concept_id",
+      "cell_value": "procedure_concept_id",
       "description": "procedure_concept_name"
     },
     {
@@ -74,7 +74,8 @@
             {
                 "process": "count",
                 "type": "numeric_list",
-                "cell_value": "measurement_concept_id"
+                "cell_value": "measurement_concept_id",
+                "description": "measurement_concept_name"
             }
     },
     {
@@ -86,7 +87,35 @@
             {
                 "process": "median",
                 "type": "numeric_list",
-                "cell_value": "value_as_number"
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "min"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "max"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "max",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
             }
 
     },
@@ -99,9 +128,91 @@
             {
                 "process": "count_categories",
                 "type": "categorical_list",
-                "cell_value": "value_as_concept_name"
+                "cell_value": "value_as_concept_name",
+                "description": "measurement_concept_name"
             }
 
-    }
+    },
+    {
+        "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "observation_concept_id",
+                "description": "observation_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "median"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "median",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
 
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "min"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "max"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "max",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "value_as_concept"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count_categories",
+                "type": "categorical_list",
+                "cell_value": "value_as_concept_name",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+        "path": ["ohdsi", "drug_exposure"],
+        "export_path": ["ohdsi", "drug_exposure", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "drug_concept_id",
+                "description": "drug_concept_name"
+            }
+    }
 ]
