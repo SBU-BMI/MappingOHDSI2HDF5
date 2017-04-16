@@ -103,11 +103,10 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
       join map2_person p on p.person_id = t.person_id) tt
     ;
 --715755 rows affected
-create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);
+create index idx_map2_cond_occur on map2_condition_occurrence(visit_occurrence_id);
 
 --select * from map2_condition_occurrence limit 100;
-  
-  
+
  --select count(*) from procedure_occurrence;
  --638557
   
@@ -137,6 +136,8 @@ create table map2_procedure_occurrence as
         left outer join concept c4 on c4.concept_id = po.modifier_concept_id) t
         join map2_person p on t.person_id = p.person_id) tt;
 --638557 rows affected  
+
+create index idx_map2_proc_occur on map2_procedure_occurrence(visit_occurrence_id);
 
 --select * from map2_procedure_occurrence limit 100;
 
@@ -175,6 +176,8 @@ from (
     left outer join concept c5 on o.qualifier_concept_id = c5.concept_id) t
    join map2_person p on t.person_id = p.person_id) tt
 ;
+
+create index idx_map2_observation on map2_observation(visit_occurrence_id);
 
 --select count(*) from map2_observation;
 --2,388,529
@@ -218,6 +221,8 @@ from (
   join map2_person p on p.person_id = t.person_id) tt
   ;
 
+create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
+
 
 --select count(*) from map2_measurement;
 --9438251
@@ -260,6 +265,8 @@ create table map2_drug_exposure as
         left outer join concept c5 on c5.concept_id = de.dose_unit_concept_id
     ) t join map2_person p on t.person_id = p.person_id) tt 
     ;
-    
+
+create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
+
 --select count(*) from map2_drug_exposure;
 --970755
