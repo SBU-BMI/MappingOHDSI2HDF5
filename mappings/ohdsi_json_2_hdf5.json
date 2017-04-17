@@ -13,6 +13,13 @@
       ],
       "type": "variables"
     },
+    {"path": ["ohdsi", "person"],
+      "export_path": ["ohdsi", "identifiers"],
+      "variables":
+          [{"cell_value": "person_id",
+            "type": "integer"}],
+      "type": "variables"
+    },
     {"path": ["ohdsi", "visit_occurrence"],
       "variables": [
          {"cell_value": "visit_concept_name",
