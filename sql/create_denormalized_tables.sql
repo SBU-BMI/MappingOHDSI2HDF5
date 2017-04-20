@@ -1,15 +1,7 @@
---Inorder to map the tables to JSON and then to HDF5 flatten the table
+--In order to map the tables to JSON and then to HDF5 flatten the table
 
 --create a denormalized tables for the main OHDSI table
 --convert date and time separately to date / time
-
---TODO:
-
-
--- Check Start
--- select count(*) from person;
--- 17950
--- Check End
 
 drop table if exists map2_person;
 create table map2_person as 
@@ -30,59 +22,71 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     left outer join concept c3 on c3.concept_id = p.ethnicity_concept_id) t
 ;
 
---select * from map2_person limit 100;
-
 create unique index idx_map2_person_p_id on map2_person(person_id);
 
---select count(*) from map2_person;
---17950
+drop table if exists map2_observation_period;
+
+create table map2_observation_period as
+select *,
+  cast(to_char(cast(min_observation_period_start_date as date), 'J') as int) as min_observation_period_start_julian_day,
+  cast(to_char(cast(max_observation_period_end_date as date), 'J') as int) as max_observation_period_end_julian_day
+from (
+select person_id, min(observation_period_start_date) as min_observation_period_start_date,
+  max(observation_period_end_date) as max_observation_period_end_date from observation_period op
+  group by person_id) t;
+
+
+create unique index idx_map2_obs_per_p_id on map2_observation_period(person_id);
+
 
 --TODO: left outer join provider
 --TODO: left outer join location
 
---select count(*) from visit_occurrence;
---344354
+drop table if exists map2_death;
+
+create table map2_death as
+  select d.*, c.concept_name as death_type_concept_name,
+    cast(to_char(cast(d.death_date as date), 'J') as int) as death_julian_day
+  from death d join concept c on d.death_type_concept_id = c.concept_id
+;
+
+create unique index idx_map2_death_p_id on map2_death(person_id);
+
+
 
 drop table if exists map2_visit_occurrence;
 create table map2_visit_occurrence as
 select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_visit_start_in_years_int from (
-  select tt.*, 
+  select tt.*,
     (visit_start_julian_day - birth_julian_day) / 365.25 as age_at_visit_start_in_years_fraction ,
     visit_start_julian_day - birth_julian_day as age_at_visit_start_in_days
   from (
-    select t.*, 
+    select t.*,
       cast(to_char(cast("visit_start_date" as date), 'J') as int) as visit_start_julian_day,
       cast(to_char(cast("visit_end_date" as date), 'J') as int) as visit_end_julian_day from (
       select vo.*, c1.concept_name as visit_concept_name, c2.concept_name as visit_type_concept_name,
         cast( --create a timestamp
-            cast(vo.visit_start_date as varchar(10)) || ' ' || 
+            cast(vo.visit_start_date as varchar(10)) || ' ' ||
                 case when vo.visit_start_time is null then '' else vo.visit_start_time end as
             timestamp) as visit_start_datetime, --e5.1 version
         cast(
-            cast(vo.visit_end_date as varchar(10)) || ' ' || 
-              case when vo.visit_end_time is null then '' else vo.visit_end_time end 
+            cast(vo.visit_end_date as varchar(10)) || ' ' ||
+              case when vo.visit_end_time is null then '' else vo.visit_end_time end
              as timestamp) as visit_end_datetime
-        from visit_occurrence vo 
+        from visit_occurrence vo
           join concept c1 on vo.visit_concept_id = c1.concept_id
           join concept c2 on vo.visit_type_concept_id = c2.concept_id) t) tt
         join map2_person mp on mp.person_id = tt.person_id) ttt
         ;
---344354 rows affected      
 
-create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);      
+create unique index idx_map2_visit_occur_id on map2_visit_occurrence(visit_occurrence_id);
 
+drop table if exists map2_person_visit_occurrence;
 create table map2_person_visit_occurrence as 
   select vo.visit_occurrence_id, p.* from visit_occurrence vo
     join map2_person p on vo.person_id = p.person_id
 ;
 
---TODO: Add caresite
---TODO: Person Age 
-            
---select count(*) from condition_occurrence;
---715755
-
-            
 drop table if exists map2_condition_occurrence;
 create table map2_condition_occurrence as
 select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condition_start_age_in_years_int from (
@@ -102,14 +106,9 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
       join concept c3 on c3.concept_id = co.condition_type_concept_id) t
       join map2_person p on p.person_id = t.person_id) tt
     ;
---715755 rows affected
+
 create index idx_map2_cond_occur on map2_condition_occurrence(visit_occurrence_id);
 
---select * from map2_condition_occurrence limit 100;
-
- --select count(*) from procedure_occurrence;
- --638557
-  
 drop table if exists map2_procedure_occurrence;
 create table map2_procedure_occurrence as 
   select tt.*, floor(tt.procedure_age_in_years_fraction) as procedure_age_in_years_int from (
@@ -138,11 +137,6 @@ create table map2_procedure_occurrence as
 --638557 rows affected  
 
 create index idx_map2_proc_occur on map2_procedure_occurrence(visit_occurrence_id);
-
---select * from map2_procedure_occurrence limit 100;
-
---select count(*) from observation;
---2,388,529
 
 drop table if exists map2_observation;
 create table map2_observation as
@@ -179,14 +173,6 @@ from (
 
 create index idx_map2_observation on map2_observation(visit_occurrence_id);
 
---select count(*) from map2_observation;
---2,388,529
-
---select * from map2_observation limit 100;
-
---select count(*) from measurement;
---9438251
-
 drop table if exists map2_measurement;
 create table map2_measurement as 
 select tt.*,
@@ -222,15 +208,6 @@ from (
   ;
 
 create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
-
-
---select count(*) from map2_measurement;
---9438251
-
---select * from map2_measurement limit 100;
-
---select count(*) from drug_exposure;
---970755
  
 drop table if exists map2_drug_exposure;
 create table map2_drug_exposure as 
@@ -267,6 +244,3 @@ create table map2_drug_exposure as
     ;
 
 create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
-
---select count(*) from map2_drug_exposure;
---970755
