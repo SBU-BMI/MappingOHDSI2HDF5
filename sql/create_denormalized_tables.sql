@@ -35,9 +35,12 @@ select person_id, min(observation_period_start_date) as min_observation_period_s
   max(observation_period_end_date) as max_observation_period_end_date from observation_period op
   group by person_id) t;
 
-
 create unique index idx_map2_obs_per_p_id on map2_observation_period(person_id);
 
+drop table if exists map2_observation_period_visit_occurrence;
+create table map2_observation_period_visit_occurrence as 
+  select mop.*, vo.visit_occurrence_id from map2_observation_period mop join visit_occurrence vo on mop.person_id = vo.person_id
+  ;
 
 --TODO: left outer join provider
 --TODO: left outer join location
@@ -51,6 +54,11 @@ create table map2_death as
 ;
 
 create unique index idx_map2_death_p_id on map2_death(person_id);
+
+drop table if exists map2_death_visit_occurrence;
+
+create table map2_death_visit_occurrence as 
+  select md.*, vo.visit_occurrence_id from map2_death md join visit_occurrence vo on md.person_id = vo.person_id;
 
 
 
