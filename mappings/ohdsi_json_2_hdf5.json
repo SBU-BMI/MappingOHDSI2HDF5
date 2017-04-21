@@ -9,6 +9,15 @@
          },
          {"cell_value":  "race_concept_name",
           "type": "categorical"
+         },
+         {"cell_value":  "race_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value":  "birth_julian_day",
+          "type": "integer"
+         },
+         {"cell_value":  "birth_date",
+          "type": "datetime"
          }
       ],
       "type": "variables"
@@ -69,6 +78,9 @@
      "path": ["ohdsi", "death"],
      "variables": [
        {"cell_value": "death_julian_day",
+         "type": "integer"
+       },
+       {"cell_value": "death_date",
          "type": "integer"
        },
        {
