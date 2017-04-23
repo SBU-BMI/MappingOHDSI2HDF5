@@ -81,7 +81,7 @@
          "type": "integer"
        },
        {"cell_value": "death_date",
-         "type": "integer"
+         "type": "datetime"
        },
        {
          "cell_value": "death_type_concept_name",
