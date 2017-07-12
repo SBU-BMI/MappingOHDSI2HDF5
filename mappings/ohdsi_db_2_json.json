@@ -147,7 +147,8 @@
                 "procedure_type_code",
                 "modifier_concept_name",
                 "modifier_concept_code",
-                "modifier_concept_vocabulary_id"
+                "modifier_concept_vocabulary_id",
+                "procedure_day_of_visit"
               ]
         },
         {
@@ -188,7 +189,8 @@
                 "unit_concept_name",
                 "unit_concept_code",
                 "unit_concept_vocabulary_id",
-                "qualifier_concept_name"
+                "qualifier_concept_name",
+                "observation_day_of_visit"
               ]
         },
         {
@@ -230,7 +232,8 @@
                 "unit_concept_name",
                 "unit_concept_code",
                 "unit_concept_vocabulary_id",
-                "operator_concept_name"
+                "operator_concept_name",
+                "measurement_day_of_visit"
               ]
         },
         {
@@ -276,9 +279,9 @@
             "route_concept_vocabulary_id",
             "unit_concept_name",
             "unit_concept_code",
-            "unit_concept_vocabulary_id"
+            "unit_concept_vocabulary_id",
+            "drug_exposure_day_of_visit"
           ]
         }
-
       ]
 }

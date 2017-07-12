@@ -64,7 +64,7 @@ create table map2_visit_occurrence as
 select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_visit_start_in_years_int from (
   select tt.*,
     (visit_start_julian_day - birth_julian_day) / 365.25 as age_at_visit_start_in_years_fraction ,
-    visit_start_julian_day - birth_julian_day as age_at_visit_start_in_days
+     visit_start_julian_day - birth_julian_day as age_at_visit_start_in_days
   from (
     select t.*,
       cast(to_char(cast("visit_start_date" as date), 'J') as int) as visit_start_julian_day,
@@ -118,7 +118,8 @@ drop table if exists map2_procedure_occurrence;
 create table map2_procedure_occurrence as 
   select tt.*, floor(tt.procedure_age_in_years_fraction) as procedure_age_in_years_int from (
     select t.*, (procedure_julian_day - p.birth_julian_day) / 365.25 as procedure_age_in_years_fraction,
-    (procedure_julian_day - p.birth_julian_day) as procedure_age_in_days
+      (procedure_julian_day - p.birth_julian_day) as procedure_age_in_days,
+       procedure_julian_day - visit_start_julian_day as procedure_day_of_visit
     from (
       select po.*, 
         cast(to_char(cast(po.procedure_date as date), 'J') as int) as procedure_julian_day,
@@ -132,15 +133,18 @@ create table map2_procedure_occurrence as
         c3.concept_code as procedure_type_code,
         c4.concept_name as modifier_concept_name,
         c4.concept_code as modifier_concept_code,
-        c4.vocabulary_id as modifier_concept_vocabulary_id
-        from procedure_occurrence po 
+        c4.vocabulary_id as modifier_concept_vocabulary_id,
+        vo.visit_start_julian_day
+        from procedure_occurrence po
+        join map2_visit_occurrence vo on vo.visit_occurrence_id = po.visit_occurrence_id
         join concept c1 on c1.concept_id = po.procedure_source_concept_id
         join concept c2 on c2.concept_id = po.procedure_concept_id
         join concept c3 on c3.concept_id = po.procedure_type_concept_id
         left outer join concept c4 on c4.concept_id = po.modifier_concept_id) t
-        join map2_person p on t.person_id = p.person_id) tt;
---638557 rows affected  
-
+        join map2_person p on t.person_id = p.person_id        
+        ) tt
+        ;
+        
 create index idx_map2_proc_occur on map2_procedure_occurrence(visit_occurrence_id);
 
 drop table if exists map2_observation;
@@ -150,7 +154,9 @@ select tt.*,
 from (
   select t.*, 
     (t.observation_julian_day - p.birth_julian_day) / 365.25 as observation_age_in_years_fraction, 
-    (t.observation_julian_day - p.birth_julian_day) as observation_age_in_days from (
+    (t.observation_julian_day - p.birth_julian_day) as observation_age_in_days,
+    observation_julian_day - visit_start_julian_day as observation_day_of_visit
+    from (
     select o.*,
           cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
           cast(cast(o.observation_date as varchar(10)) || ' ' || o.observation_time as timestamp) as observation_datetime,
@@ -166,8 +172,10 @@ from (
           c4.concept_name as unit_concept_name,
           c4.concept_code as unit_concept_code,
           c4.vocabulary_id as unit_concept_vocabulary_id,
-          c5.concept_name as qualifier_concept_name
+          c5.concept_name as qualifier_concept_name,
+          vo.visit_start_julian_day
     from observation o
+    join map2_visit_occurrence vo on vo.visit_occurrence_id = o.visit_occurrence_id
     join concept c1 on o.observation_source_concept_id = c1.concept_id
     join concept c2 on o.observation_concept_id = c2.concept_id
     left outer join concept c3 on o.value_as_concept_id = c3.concept_id
@@ -185,7 +193,8 @@ select tt.*,
 from (
   select t.*, 
     (t.measurement_julian_day - p.birth_julian_day) / 365.25 as measurement_age_in_years_fraction, 
-    (t.measurement_julian_day - p.birth_julian_day) as measurement_age_in_days
+    (t.measurement_julian_day - p.birth_julian_day) as measurement_age_in_days,
+     t.measurement_julian_day - visit_start_julian_day as measurement_day_of_visit
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
@@ -202,8 +211,10 @@ from (
         c4.concept_name as unit_concept_name,
         c4.concept_code as unit_concept_code,
         c4.vocabulary_id as unit_concept_vocabulary_id,
-        c5.concept_name as operator_concept_name
+        c5.concept_name as operator_concept_name,
+        vo.visit_start_julian_day
   from measurement m
+  join map2_visit_occurrence vo on vo.visit_occurrence_id = m.visit_occurrence_id
   join concept c1 on m.measurement_source_concept_id = c1.concept_id
   join concept c2 on m.measurement_concept_id = c2.concept_id
   left outer join concept c3 on m.value_as_concept_id = c3.concept_id
@@ -219,7 +230,8 @@ create table map2_drug_exposure as
   select tt.*, floor(drug_exposure_start_age_in_years_fraction) as drug_exposure_start_age_in_years_int from (
     select t.*,
         (t.drug_exposure_start_julian_day - p.birth_julian_day) / 365.25 as drug_exposure_start_age_in_years_fraction, 
-        (t.drug_exposure_start_julian_day - p.birth_julian_day) as drug_exposure_start_age_in_days
+        (t.drug_exposure_start_julian_day - p.birth_julian_day) as drug_exposure_start_age_in_days,
+        drug_exposure_start_julian_day - visit_start_julian_day as drug_exposure_day_of_visit 
     from (
       select de.*,
         cast(to_char(cast(de.drug_exposure_start_date as date), 'J') as int) as drug_exposure_start_julian_day,
@@ -238,8 +250,10 @@ create table map2_drug_exposure as
         c4.vocabulary_id as route_concept_vocabulary_id,
         c5.concept_name as unit_concept_name,
         c5.concept_code as unit_concept_code,
-        c5.vocabulary_id as unit_concept_vocabulary_id
+        c5.vocabulary_id as unit_concept_vocabulary_id,
+        vo.visit_start_julian_day
       from drug_exposure de
+        join map2_visit_occurrence vo on vo.visit_occurrence_id = de.visit_occurrence_id
         join concept c1 on c1.concept_id = de.drug_source_concept_id
         join concept c2 on c2.concept_id = de.drug_concept_id
         left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
