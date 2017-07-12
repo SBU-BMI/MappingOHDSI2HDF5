@@ -52,15 +52,12 @@ create table map2_death as
     cast(to_char(cast(d.death_date as date), 'J') as int) as death_julian_day
   from death d join concept c on d.death_type_concept_id = c.concept_id
 ;
-
 create unique index idx_map2_death_p_id on map2_death(person_id);
 
 drop table if exists map2_death_visit_occurrence;
 
 create table map2_death_visit_occurrence as 
   select md.*, vo.visit_occurrence_id from map2_death md join visit_occurrence vo on md.person_id = vo.person_id;
-
-
 
 drop table if exists map2_visit_occurrence;
 create table map2_visit_occurrence as
