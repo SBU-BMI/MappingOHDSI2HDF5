@@ -18,8 +18,8 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     c3.concept_name as race_concept_name
     from person p 
     join concept c1 on c1.concept_id = p.gender_concept_id
-    left outer join concept c2 on c2.concept_id = p.race_concept_id
-    left outer join concept c3 on c3.concept_id = p.ethnicity_concept_id) t
+    left outer join concept c2 on c2.concept_id = p.ethnicity_concept_id
+    left outer join concept c3 on c3.concept_id = p.race_concept_id) t
 ;
 
 create unique index idx_map2_person_p_id on map2_person(person_id);
