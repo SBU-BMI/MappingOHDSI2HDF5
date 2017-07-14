@@ -1,22 +1,20 @@
 [
     {"path": ["ohdsi", "person"],
       "variables": [
-         {"cell_value": "ethnicity_concept_name",
-          "type": "categorical"
-         },
          {"cell_value": "gender_concept_name",
           "type": "categorical"
          },
          {"cell_value":  "race_concept_name",
           "type": "categorical"
          },
-         {"cell_value":  "race_concept_name",
+         {"cell_value": "ethnicity_concept_name",
           "type": "categorical"
          },
          {"cell_value":  "birth_julian_day",
           "type": "integer"
          },
-         {"cell_value":  "birth_date",
+         {
+           "cell_value":  "birth_date",
           "type": "datetime"
          }
       ],
