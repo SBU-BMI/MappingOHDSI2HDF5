@@ -43,6 +43,6 @@ python  ../../TransformDBtoHDF5ML/scripts/build_document_mapping_from_db.py -c o
 ```
 
 Each visit/encounter document contains information about a visit: conditions, observations, procedures, measurements, and
-drug exposures.
+drug exposures. The document is keyed by the ’visit_occurrence_id’ and each JSON file comtains a subset of documents.
 
 ## Mapping to HDF5
