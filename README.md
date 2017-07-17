@@ -47,10 +47,12 @@ python  ../../TransformDBtoHDF5ML/scripts/build_document_mapping_from_db.py -c o
 Each visit/encounter document contains information about a visit: conditions, observations,
 procedures, measurements, and drug exposures. The document is keyed by the ’visit_occurrence_id’ and
 each JSON file contains a subset of documents. The JSON file is nearly human readable and it is good idea to
-review the document to determine if the data is mapped For large datasets the 
+review the document to determine if the data is mapped. For large datasets the 
 uJSON library should be utilized to optimize file writing. The JSON files can get large and gzip compression will help save 
-file storage space. 
+file storage space. Both these options can be set in the ’runtime_config.json’ file.
 
-In addition to the JSON documents two other type of files are generated.
+In addition to the JSON documents two other type of files are generated. The key order files stores the order of the visit_occurrences. For the OHDSI mappings the order is by ’person_id’ and then by the start date of the visit.
+
+
 
 ## Mapping to HDF5
