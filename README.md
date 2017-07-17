@@ -32,12 +32,13 @@ numeric matrix and labels it is possible to build and train machine learning alg
 The first step is to build additional tables in the PostGreSQL database that will be used for
 the mapping. The map2 tables are  denormalized versions of the OHDSI tables that haves primary 
 keys of ’visit_occurrence_id’. The SQL script can be executed in an editor or using the 
-program ’execute_sql.py’ which requires a SQLAlchemy connection string.
+program ’execute_sql.py’ which requires a SQLAlchemy connection string and the schema the
+data is stored in.
 
 ## Mapping to JSON documents
 
 Before running the mapping script the `runtime_config.example.json` needs to copied
-to `runtime_config.json`. The filemust be edited to include database connection
+to `runtime_config.json`. The file must be edited to include database connection
 properties.
 
 ```bash
@@ -51,8 +52,14 @@ review the document to determine if the data is mapped. For large datasets the
 uJSON library should be utilized to optimize file writing. The JSON files can get large and gzip compression will help save 
 file storage space. Both these options can be set in the ’runtime_config.json’ file.
 
-In addition to the JSON documents two other type of files are generated. The key order files stores the order of the visit_occurrences. For the OHDSI mappings the order is by ’person_id’ and then by the start date of the visit.
+In addition to the JSON documents two other type of files are generated. The key order files stores the order of the
+visit_occurrences. For the OHDSI mappings the order is by ’person_id’ and then by the start date of the visit.
+The batches file stores the name of the document JSON files and key order files. Depending on the available memory 
+and the amount of detail in a visit the batch size can be set higher.
 
-
+The JSON document files can be loaded into a MongoDB database for querying or they can be mapped into a 
+HDF5 container file.
 
 ## Mapping to HDF5
+
+Machine learning libraries 
