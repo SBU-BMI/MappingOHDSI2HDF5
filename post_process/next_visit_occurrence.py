@@ -30,6 +30,7 @@ visit_concept_name	Outpatient Visit
 import numpy as np
 import h5py
 import argparse
+import shutil
 
 
 def index_annotations(column_annotations, field_name):
@@ -47,9 +48,13 @@ def index_annotations(column_annotations, field_name):
         return None
 
 
-def main(hdf5_file_name):
+def main(hdf5_file_name, make_backup=False):
 
     # Get positions to slice
+
+    if make_backup:
+        print("Making backup copy of file")
+        shutil.copy(hdf5_file_name, hdf5_file_name + ".bak")
 
     f5 = h5py.File(hdf5_file_name, "r+")
     path_to_visit = "/ohdsi/visit_occurrence/"
@@ -147,8 +152,10 @@ def main(hdf5_file_name):
 
 if __name__ == "__main__":
 
-    arg_parse_obj = argparse.ArgumentParser(description="A script for adding next visit details into the HDF5 file container")
+    arg_parse_obj = argparse.ArgumentParser(description="A script for adding next visit details into the HDF5 file " +
+                                                        "container for data mapped from OHDSI")
+
     arg_parse_obj.add_argument("-f", dest="hdf5_file_name")
     arg_obj = arg_parse_obj.parse_args()
 
-    main(arg_obj.hdf5_file_name)
+    main(arg_obj.hdf5_file_name, make_backup=True)
