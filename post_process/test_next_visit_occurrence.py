@@ -14,10 +14,9 @@ class TestNextVisit(unittest.TestCase):
 
         shutil.copy("../test/synpuf_ohdsi_combined.hdf5", self.file_name)
 
-    def test_calcualte_next_visit(self):
+    def test_calculate_next_visit(self):
 
         main(self.file_name)
-        raise
 
 
 if __name__ == '__main__':

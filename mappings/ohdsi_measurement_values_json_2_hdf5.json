@@ -1,0 +1,57 @@
+[
+   {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "median"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "median",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "min"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "max"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "max",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "value_as_concept"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count_categories",
+                "type": "categorical_list",
+                "cell_value": "value_as_concept_name",
+                "description": "measurement_concept_name"
+            }
+
+    }
+]

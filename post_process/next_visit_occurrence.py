@@ -19,7 +19,7 @@ person_id
 
 # Position in matrix of next visit
 /computed/next/position/visit_occurrence/core_array
-/computed/next/position/visit_occurrence/core_array
+/computed/next/position/visit_occurrence/column_annotations
 
 visit_concept_name	Inpatient Visit
 visit_concept_name	No matching concept
@@ -79,36 +79,75 @@ def main(hdf5_file_name):
 
     person_ids = f5[path_to_identifiers + "core_array"][:, slice_person_id[0]:slice_person_id[1]]
 
-    print(path_to_visit + "core_array")
-
     visit_start = f5[path_to_visit + "core_array"][:, slice_visit_start[0]:slice_visit_start[1]]
     visit_end = f5[path_to_visit + "core_array"][:, slice_visit_end[0]:slice_visit_end[1]]
 
-    visit_concept_names = visit_annotations[1,slice_visit_concept_name[0]:slice_visit_concept_name[1]]
-    print(visit_concept_names)
+    visit_concept_slices = visit_annotations[:, slice_visit_concept_name[0]:slice_visit_concept_name[1]]
 
     visit_concepts = f5[path_to_visit + "core_array"][:, slice_visit_concept_name[0]:slice_visit_concept_name[1]]
 
-    print(visit_concepts.shape)
+    number_of_visits, number_of_categories = visit_concepts.shape
 
-    last_person_id = int(person_ids[0,0])
+    last_person_id = int(person_ids[0, 0])
+
     starting_new_position = 0
     person_dict = {}
     for i in range(person_ids.shape[0]):
-        person_id = int(person_ids[i,0])
+        person_id = int(person_ids[i, 0])
 
         if person_id != last_person_id:
             person_dict[last_person_id] = (starting_new_position, i-1)
             starting_new_position = i
             last_person_id = person_id
 
-
+    person_dict[person_id] = (starting_new_position + 1, i)
     # Now iterate for each person
 
+    has_future_visit_array = np.zeros(shape=(number_of_visits, number_of_categories))
+    future_visit_positions_array = np.zeros(shape=(number_of_visits, number_of_categories))
+    future_visits_days_array = np.zeros(shape=(number_of_visits, number_of_categories))
+
+    for person_id in person_dict:
+        person_start, person_end = person_dict[person_id]
+
+        for i in range(person_end - person_start):
+            person_start_i = person_start + i
+            future_visit_count = np.sum(visit_concepts[person_start_i + 1: person_end + 1], 0)
+            future_visit_count[future_visit_count > 0] = 1
+            has_future_visit_array[person_start_i, :] = future_visit_count
+            future_visits = visit_concepts[person_start_i + 1: person_end + 1]
+
+            for c in range(number_of_categories):
+                future_visit_positions = np.where(future_visits[:, c] > 0)
+                if len(future_visit_positions[0]):
+                    future_visit_positions_array[person_start_i, c] = person_start_i + future_visit_positions[0][0] + 1
+
+            current_visit_end = visit_end[person_start_i]
+
+            for c in range(number_of_categories):
+                if future_visit_positions_array[person_start_i, c] > 0:
+                    future_visits_days_array[person_start_i, c] = visit_start[future_visit_positions_array[person_start_i, c]] - \
+                                                                  current_visit_end
+
+    # 30 day readmission
+    day_30_positions_array = np.zeros(shape=(number_of_visits, number_of_categories))
+    day_30_positions_array[np.where((future_visits_days_array >= 1) & (future_visits_days_array <= 30))] = 1
+
+    f5["/computed/next/30_days/visit_occurrence/core_array"] = day_30_positions_array
+    f5["/computed/next/30_days/visit_occurrence/column_annotations"] = visit_concept_slices
+
+    f5["/computed/next/days/visit_occurrence/core_array"] = future_visits_days_array
+    f5["/computed/next/days/visit_occurrence/column_annotations"] = visit_concept_slices
+
+    f5["/computed/next/has/visit_occurrence/core_array"] = has_future_visit_array
+    f5["/computed/next/has/visit_occurrence/column_annotations"] = visit_concept_slices
+
+    f5["/computed/next/position/visit_occurrence/core_array"] = future_visit_positions_array
+    f5["/computed/next/position/visit_occurrence/column_annotations"] = visit_concept_slices
 
 if __name__ == "__main__":
 
-    arg_parse_obj = argparse.ArgumentParser()
+    arg_parse_obj = argparse.ArgumentParser(description="A script for adding next visit details into the HDF5 file container")
     arg_parse_obj.add_argument("-f", dest="hdf5_file_name")
     arg_obj = arg_parse_obj.parse_args()
 
