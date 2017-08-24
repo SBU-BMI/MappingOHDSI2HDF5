@@ -32,26 +32,12 @@ import h5py
 import argparse
 import shutil
 
-
-def index_annotations(column_annotations, field_name):
-
-    column_list = column_annotations[0,:].tolist()
-
-    if field_name in column_list:
-        start_position = column_list.index(field_name)
-        reverse_column_list = list(column_list)
-        reverse_column_list.reverse()
-        end_position = len(column_list) - reverse_column_list.index(field_name)
-
-        return (start_position, end_position)
-    else:
-        return None
+from post_process_utilities import index_annotations, generate_person_dict, visit_start_slice
 
 
 def main(hdf5_file_name, make_backup=False):
 
     # Get positions to slice
-
     if make_backup:
         print("Making backup copy of file")
         shutil.copy(hdf5_file_name, hdf5_file_name + ".bak")
@@ -67,11 +53,7 @@ def main(hdf5_file_name, make_backup=False):
 
     slice_visit_concept_name = index_annotations(visit_annotations, visit_concept_name)
 
-    visit_start = "visit_start_julian_day"
-    visit_end = "visit_end_julian_day"
-
-    slice_visit_start = index_annotations(visit_annotations, visit_start)
-    slice_visit_end = index_annotations(visit_annotations, visit_end)
+    slice_visit_start, slice_visit_end = visit_start_slice(visit_annotations)
 
     path_to_identifiers = "/ohdsi/identifiers/"
     identifiers_annotations_path = path_to_identifiers + "column_annotations"
@@ -93,23 +75,11 @@ def main(hdf5_file_name, make_backup=False):
 
     number_of_visits, number_of_categories = visit_concepts.shape
 
-    last_person_id = int(person_ids[0, 0])
-
-    starting_new_position = 0
-    person_dict = {}
-    for i in range(person_ids.shape[0]):
-        person_id = int(person_ids[i, 0])
-
-        if person_id != last_person_id:
-            person_dict[last_person_id] = (starting_new_position, i-1)
-            starting_new_position = i
-            last_person_id = person_id
-
-    person_dict[person_id] = (starting_new_position + 1, i)
+    person_dict = generate_person_dict(person_ids)
     # Now iterate for each person
 
     has_future_visit_array = np.zeros(shape=(number_of_visits, number_of_categories))
-    future_visit_positions_array = np.zeros(shape=(number_of_visits, number_of_categories))
+    future_visit_positions_array = np.zeros(shape=(number_of_visits, number_of_categories), dtype="i")
     future_visits_days_array = np.zeros(shape=(number_of_visits, number_of_categories))
 
     for person_id in person_dict:
@@ -131,8 +101,7 @@ def main(hdf5_file_name, make_backup=False):
 
             for c in range(number_of_categories):
                 if future_visit_positions_array[person_start_i, c] > 0:
-                    future_visits_days_array[person_start_i, c] = visit_start[future_visit_positions_array[person_start_i, c]] - \
-                                                                  current_visit_end
+                    future_visits_days_array[person_start_i, c] = visit_start[future_visit_positions_array[person_start_i, c]] - current_visit_end
 
     # 30 day readmission
     day_30_positions_array = np.zeros(shape=(number_of_visits, number_of_categories))
