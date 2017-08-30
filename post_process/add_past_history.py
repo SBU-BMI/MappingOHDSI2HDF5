@@ -92,7 +92,6 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
             eligible_visit_past_dates = past_visit_start_dates[past_visit_start_dates >= visit_to_look_back_date]
             rows_to_look_back = eligible_visit_past_dates.shape[0]
 
-            # print(i, rows_to_look_back, i_prefetch, person_start, person_end, person_id, current_visit_start_date, eligible_visit_past_dates)
             if rows_to_look_back:
                 past_history = np.sum(prefetched_core_array[i_prefetch-1-rows_to_look_back: i_prefetch-1, :], axis=0)
                 prefetch_past_history_matrix[i_prefetch, :] = past_history
