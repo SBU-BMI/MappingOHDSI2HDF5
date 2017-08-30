@@ -1,0 +1,57 @@
+## Running the notebooks
+
+It is assumed that you have the Anaconda python distribution installed.
+In your commanline shell start your Jupyter server in the notebooks directory:
+
+```
+jupyter notebook
+```
+
+First run the build `build_flat_readmission_hdf5.ipnyb` notebook to build the
+`inpatient_readmission_analysis.hdf5` file.
+
+## Steps to generate the HDF5 file used in the example 
+
+This describes the process which was used to build the HDF5 file. You do not need to run this
+to run the notebooks. The steps are provided below as a reference.
+
+Steps to generate the HDF5 file `synpuf_inpatient_readmission.hdf5` for the notebook 
+examples.  This was run on an Ubuntu Linux virtual machine with the standard PostGreSQL docker image 
+with an IP address of `172.17.0.2`. 
+The CDM vocabulary files should be in `~/data/ohdsi_synpuf/vocabulary/` and the SYNPUF files
+should be in `~/data/ohdsi_synpuf/files/`.
+
+Building the database:
+```
+echo "create schema synpuf5" | psql -h172.17.0.2 -Upostgres
+psql -h172.17.0.2 -Upostgres < omop_cdm_schema_localized.sql 
+psql -h172.17.0.2 -Upostgres < load_synthetic_data.sql 
+psql -h172.17.0.2 -Upostgres < omop_cdm_vocabulary_load.sql 
+```
+
+Export inpatient visits to JSON documents:
+```
+cd ~/github/MappingOHDSI2HDF5/mappings
+python ~/github/TransformDBtoHDF5ML/scripts/build_document_mapping_from_db.py -r runtime_config.inpatient.json -c ohdsi_db_2_json.json
+```
+
+Export JSON documents to HDF5:
+```
+cd ~/github/MappingOHDSI2HDF5/mappings
+python ~/github/TransformDBtoHDF5ML/scripts/build_hdf5_matrix_from_document.py -a synpuf_inpatient -c ohdsi_json_2_hdf5.json -b ~/data/ohdsi2hdf5/ohdsi_mapped_batches.json 
+```
+
+Apply the post processing steps:
+```bash
+cp synpuf_inpatient_combined.hdf5 synpuf_inpatient_combined_readmission.hdf5
+python ../post_process/next_visit_occurrence.py -f synpuf_inpatient_combined_readmission.hdf5
+python ../post_process/add_past_history.py -f synpuf_inpatient_combined_readmission.hdf5 -p /computed/next/30_days/visit_occurrence/
+
+# Optional for past history
+#python ../post_process/add_past_history.py -f synpuf_inpatient_combined_readmission.hdf5 -p /ohdsi/condition_occurrence/
+#python ../post_process/add_past_history.py -f synpuf_inpatient_combined_readmission.hdf5 -p /ohdsi/procedure_occurrence/
+
+#python ../post_process/add_past_history.py -f synpuf_inpatient_combined_readmission.hdf5 -p /computed/next/30_days/visit_occurrence/
+#python ../post_process/add_past_history.py -f synpuf_inpatient_combined_readmission.hdf5-p /ohdsi/visit_occurrence/
+```
+
