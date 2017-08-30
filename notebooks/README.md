@@ -1,14 +1,20 @@
 ## Running the notebooks
 
-It is assumed that you have the Anaconda python distribution installed.
-In your commanline shell start your Jupyter server in the notebooks directory:
+It is assumed that you have the 
+[Anaconda Python distribution](https://www.anaconda.com/download/) installed.
+In your commandline shell start the Jupyter notebook server in the `./notebooks/` directory:
 
-```
+```bash
+cd ./notebooks/
 jupyter notebook
 ```
 
-First run the build `build_flat_readmission_hdf5.ipnyb` notebook to build the
-`inpatient_readmission_analysis.hdf5` file.
+First run the notebook  `build_flat_readmission_hdf5.ipnyb` to build the
+`inpatient_readmission_analysis.hdf5` file. This file creates two data sets 
+`/independent/core_array` and `/dependent/core_array` where the value of `1` 
+indicates that the patient was readmitted in 30 days. The second notebook 
+`readmission_predictive_model_build.ipynb` builds a predictive data. A third notebook 
+explores the content of the HDF5 container: `explore_inpatient_synpuf_analysis.ipynb`
 
 ## Steps to generate the HDF5 file used in the example 
 
@@ -22,7 +28,7 @@ The CDM vocabulary files should be in `~/data/ohdsi_synpuf/vocabulary/` and the 
 should be in `~/data/ohdsi_synpuf/files/`.
 
 Building the database:
-```
+```bash
 echo "create schema synpuf5" | psql -h172.17.0.2 -Upostgres
 psql -h172.17.0.2 -Upostgres < omop_cdm_schema_localized.sql 
 psql -h172.17.0.2 -Upostgres < load_synthetic_data.sql 
@@ -30,14 +36,14 @@ psql -h172.17.0.2 -Upostgres < omop_cdm_vocabulary_load.sql
 ```
 
 Export inpatient visits to JSON documents:
-```
+```bash
 cd ~/github/MappingOHDSI2HDF5/mappings
 python ~/github/TransformDBtoHDF5ML/scripts/build_document_mapping_from_db.py -r runtime_config.inpatient.json -c ohdsi_db_2_json.json
 ```
 
 Export JSON documents to HDF5:
-```
-cd ~/github/MappingOHDSI2HDF5/mappings
+```bash
+cd ~/github/MappingOHDSI2HDF5/mappings/
 python ~/github/TransformDBtoHDF5ML/scripts/build_hdf5_matrix_from_document.py -a synpuf_inpatient -c ohdsi_json_2_hdf5.json -b ~/data/ohdsi2hdf5/ohdsi_mapped_batches.json 
 ```
 
