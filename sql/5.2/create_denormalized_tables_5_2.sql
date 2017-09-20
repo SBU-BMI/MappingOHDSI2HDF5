@@ -15,8 +15,10 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     c1.concept_name as gender_concept_name,
     c1.concept_code as gender_concept_code,
     c2.concept_name as ethnicity_concept_name,
-    c3.concept_name as race_concept_name
-    from person p 
+    c2.concept_code as ethnicity_concept_code,
+    c3.concept_name as race_concept_name,
+    c3.concept_code as race_concept_code,
+    from person p
     join concept c1 on c1.concept_id = p.gender_concept_id
     left outer join concept c2 on c2.concept_id = p.ethnicity_concept_id
     left outer join concept c3 on c3.concept_id = p.race_concept_id
@@ -40,7 +42,8 @@ create unique index idx_map2_obs_per_p_id on map2_observation_period(person_id);
 
 drop table if exists map2_observation_period_visit_occurrence;
 create table map2_observation_period_visit_occurrence as 
-  select mop.*, vo.visit_occurrence_id from map2_observation_period mop join visit_occurrence vo on mop.person_id = vo.person_id
+  select mop.*, vo.visit_occurrence_id from map2_observation_period mop
+    join visit_occurrence vo on mop.person_id = vo.person_id
   ;
 
 --TODO: left outer join provider
@@ -70,19 +73,22 @@ select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_vis
     select t.*,
       cast(to_char(cast("visit_start_date" as date), 'J') as int) as visit_start_julian_day,
       cast(to_char(cast("visit_end_date" as date), 'J') as int) as visit_end_julian_day from (
-      select vo.*, c1.concept_name as visit_concept_name, c2.concept_name as visit_type_concept_name,
+      select vo.*,
+      c1.concept_name as visit_concept_name,
+      c1.concept_code as visit_concept_code,
+      c2.concept_name as visit_type_concept_name,
+      c2.concept_code as visit_type_concept_code,
       c3.concept_name as admitting_source_concept_name,
-      c4.concept_name as dischrage_to_concept_name,
+      c3.concept_code as admitting_source_concept_id,
+      c4.concept_name as discharge_to_concept_name,
+      c4.concept_code as discharge_to_concept_id,
       cs.care_site_name
-        visit_start_datetime, --e5.1 version
-        visit_end_datetime
-        from visit_occurrence vo
+      from visit_occurrence vo
           left outer join care_site cs on cs.care_site_id = vo.care_site_id
           join concept c1 on vo.visit_concept_id = c1.concept_id
           join concept c2 on vo.visit_type_concept_id = c2.concept_id
           left outer join concept c3 on vo.admitting_source_concept_id = c3.concept_id
           left outer join concept c4 on vo.discharge_to_concept_id = c4.concept_id
-          
           ) t) tt
         join map2_person mp on mp.person_id = tt.person_id) ttt
         ;
@@ -97,8 +103,9 @@ create table map2_person_visit_occurrence as
 
 drop table if exists map2_visit_occurrence_payer_plan;
 create table map2_visit_occurrence_payer_plan as 
-  select distinct vo.visit_occurrence_id, ppp.plan_source_value from payer_plan_period ppp join visit_occurrence vo on ppp.person_id = vo.person_id
-    and vo.visit_start_date = ppp.payer_plan_period_start_date
+  select distinct vo.visit_occurrence_id, ppp.plan_source_value from payer_plan_period ppp
+    join visit_occurrence vo on ppp.person_id = vo.person_id
+      and vo.visit_start_date = ppp.payer_plan_period_start_date
     order by vo.visit_occurrence_id, ppp.plan_source_value
 ;
 
@@ -110,12 +117,16 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
   from (
     select co.*,
       cast(to_char(cast(co.condition_start_date as date), 'J') as int) as condition_start_julian_day,
-      c1.concept_name as source_condition_concept_name, c1.concept_code as source_condition_concept_code,
-        c1.vocabulary_id as source_condition_vocabulary_id,
-      c2.concept_name as condition_concept_name, c2.concept_code as condition_concept_code,
-        c2.vocabulary_id as condition_vocabulary_id,
+      c1.concept_name as condition_source_concept_name,
+      c1.concept_code as condition_source_concept_code,
+      c1.vocabulary_id as source_condition_vocabulary_id,
+      c2.concept_name as condition_concept_name,
+      c2.concept_code as condition_concept_code,
+      c2.vocabulary_id as condition_vocabulary_id,
       c3.concept_name as condition_type_name,
-      c4.concept_name as concept_status_concept_name
+      c3.concept_code as condition_type_concept_code,
+      c4.concept_name as concept_status_concept_name,
+      c4.concept_code as concept_status_concept_code
     from condition_occurrence co 
       join concept c1 on c1.concept_id = co.condition_source_concept_id
       join concept c2 on c2.concept_id = co.condition_concept_id
@@ -139,11 +150,11 @@ create table map2_procedure_occurrence as
         c1.concept_name as procedure_source_concept_name, 
         c1.concept_code as procedure_source_concept_code,
         c1.vocabulary_id as procedure_source_vocabulary_id,
-        c2.concept_name as procedure_concept_name, 
+        c2.concept_name as procedure_concept_name,
         c2.concept_code as procedure_concept_code,
         c2.vocabulary_id as procedure_vocabulary_id,
-        c3.concept_name as procedure_type_name,
-        c3.concept_code as procedure_type_code,
+        c3.concept_name as procedure_type_concept_name,
+        c3.concept_code as procedure_type_concept_code,
         c4.concept_name as modifier_concept_name,
         c4.concept_code as modifier_concept_code,
         c4.vocabulary_id as modifier_concept_vocabulary_id,
@@ -172,11 +183,10 @@ from (
     from (
     select o.*,
           cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
-          cast(cast(o.observation_date as varchar(10)) || ' ' || o.observation_time as timestamp) as observation_datetime,
           c1.concept_name as observation_source_concept_name, 
           c1.concept_code as observation_source_concept_code,
           c1.vocabulary_id as source_vocabulary_id,
-          c2.concept_name as observation_concept_name, 
+          c2.concept_name as observation_concept_name,
           c2.concept_code as observation_concept_code,
           c2.vocabulary_id as concept_vocabulary_id,
           c3.concept_name as value_as_concept_name,
@@ -186,6 +196,7 @@ from (
           c4.concept_code as unit_concept_code,
           c4.vocabulary_id as unit_concept_vocabulary_id,
           c5.concept_name as qualifier_concept_name,
+          c5.concept_code as qualifier_concept_id,
           vo.visit_start_julian_day
     from observation o
     join map2_visit_occurrence vo on vo.visit_occurrence_id = o.visit_occurrence_id
@@ -211,7 +222,6 @@ from (
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
-        cast(cast(m.measurement_date as varchar(10)) || ' ' || m.measurement_time as timestamp) as measurement_datetime,
         c1.concept_name as measurement_source_concept_name, 
         c1.concept_code as measurement_source_concept_code,
         c1.vocabulary_id as source_vocabulary_id,
