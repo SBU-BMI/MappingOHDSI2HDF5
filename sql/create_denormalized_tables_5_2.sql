@@ -19,7 +19,8 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     from person p 
     join concept c1 on c1.concept_id = p.gender_concept_id
     left outer join concept c2 on c2.concept_id = p.ethnicity_concept_id
-    left outer join concept c3 on c3.concept_id = p.race_concept_id) t
+    left outer join concept c3 on c3.concept_id = p.race_concept_id
+    ) t
 ;
 
 create unique index idx_map2_person_p_id on map2_person(person_id);
@@ -70,11 +71,19 @@ select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_vis
       cast(to_char(cast("visit_start_date" as date), 'J') as int) as visit_start_julian_day,
       cast(to_char(cast("visit_end_date" as date), 'J') as int) as visit_end_julian_day from (
       select vo.*, c1.concept_name as visit_concept_name, c2.concept_name as visit_type_concept_name,
-        visit_start_datetime,
+      c3.concept_name as admitting_source_concept_name,
+      c4.concept_name as dischrage_to_concept_name,
+      cs.care_site_name
+        visit_start_datetime, --e5.1 version
         visit_end_datetime
         from visit_occurrence vo
+          left outer join care_site cs on cs.care_site_id = vo.care_site_id
           join concept c1 on vo.visit_concept_id = c1.concept_id
-          join concept c2 on vo.visit_type_concept_id = c2.concept_id) t) tt
+          join concept c2 on vo.visit_type_concept_id = c2.concept_id
+          left outer join concept c3 on vo.admitting_source_concept_id = c3.concept_id
+          left outer join concept c4 on vo.discharge_to_concept_id = c4.concept_id
+          
+          ) t) tt
         join map2_person mp on mp.person_id = tt.person_id) ttt
         ;
 
@@ -84,6 +93,13 @@ drop table if exists map2_person_visit_occurrence;
 create table map2_person_visit_occurrence as 
   select vo.visit_occurrence_id, p.* from visit_occurrence vo
     join map2_person p on vo.person_id = p.person_id
+;
+
+drop table if exists map2_visit_occurrence_payer_plan;
+create table map2_visit_occurrence_payer_plan as 
+  select distinct vo.visit_occurrence_id, ppp.plan_source_value from payer_plan_period ppp join visit_occurrence vo on ppp.person_id = vo.person_id
+    and vo.visit_start_date = ppp.payer_plan_period_start_date
+    order by vo.visit_occurrence_id, ppp.plan_source_value
 ;
 
 drop table if exists map2_condition_occurrence;
@@ -98,11 +114,14 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
         c1.vocabulary_id as source_condition_vocabulary_id,
       c2.concept_name as condition_concept_name, c2.concept_code as condition_concept_code,
         c2.vocabulary_id as condition_vocabulary_id,
-      c3.concept_name as condition_type_name
+      c3.concept_name as condition_type_name,
+      c4.concept_name as concept_status_concept_name
     from condition_occurrence co 
       join concept c1 on c1.concept_id = co.condition_source_concept_id
       join concept c2 on c2.concept_id = co.condition_concept_id
-      join concept c3 on c3.concept_id = co.condition_type_concept_id) t
+      join concept c3 on c3.concept_id = co.condition_type_concept_id
+      left outer join concept c4 on c4.concept_id = co.condition_status_concept_id
+      ) t
       join map2_person p on p.person_id = t.person_id) tt
     ;
 
@@ -153,7 +172,7 @@ from (
     from (
     select o.*,
           cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
-          observation_datetime,
+          cast(cast(o.observation_date as varchar(10)) || ' ' || o.observation_time as timestamp) as observation_datetime,
           c1.concept_name as observation_source_concept_name, 
           c1.concept_code as observation_source_concept_code,
           c1.vocabulary_id as source_vocabulary_id,
@@ -192,7 +211,7 @@ from (
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
-        measurement_datetime,
+        cast(cast(m.measurement_date as varchar(10)) || ' ' || m.measurement_time as timestamp) as measurement_datetime,
         c1.concept_name as measurement_source_concept_name, 
         c1.concept_code as measurement_source_concept_code,
         c1.vocabulary_id as source_vocabulary_id,
