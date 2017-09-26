@@ -1,0 +1,17 @@
+{
+  "source_db_config": {
+    "connection_string": "postgresql+psycopg2://postgres@localhost/synpuf5",
+    "limit": 100,
+    "refresh_transactions_table": 1,
+    "batch_size": 500,
+    "schema": "synpuf5"
+  },
+  "json_file_config":
+  {
+    "base_file_name": "ohdsi_mapped",
+    "data_directory": "/data/"
+  },
+  "use_ujson": false,
+  "use_gzip_compression": false,
+  "output_type": "json_file"
+}

@@ -1,0 +1,171 @@
+[
+    {"path": ["ohdsi", "person"],
+      "variables": [
+         {"cell_value": "gender_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value":  "race_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "ethnicity_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value":  "birth_julian_day",
+          "type": "integer"
+         },
+         {
+           "cell_value":  "birth_date",
+          "type": "datetime"
+         }
+      ],
+      "type": "variables"
+    },
+    {"path": ["ohdsi", "person"],
+      "export_path": ["ohdsi", "identifiers"],
+      "variables":
+          [{"cell_value": "person_id",
+            "type": "integer"}],
+      "type": "variables"
+    },
+    {"path": ["ohdsi", "visit_occurrence"],
+      "variables": [
+         {"cell_value": "visit_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "visit_type_concept_name",
+          "type": "categorical"
+         },
+         {"cell_value": "age_at_visit_start_in_years_int",
+          "type": "integer"
+         },
+         {"cell_value": "age_at_visit_start_in_days",
+          "type": "integer"
+         },
+         {
+          "cell_value": "visit_start_julian_day",
+           "type": "integer"
+         },
+         {
+          "cell_value": "visit_end_julian_day",
+           "type": "integer"
+         },
+         {
+          "cell_value": "visit_start_datetime",
+           "type": "datetime"
+         },
+         {
+          "cell_value": "visit_end_datetime",
+           "type": "datetime"
+         },
+         {
+          "cell_value": "care_site_name",
+          "type": "categorical"
+         },
+         {
+           "cell_value": "admitting_source_concept_name",
+           "type": "categorical"
+         },
+        {
+          "cell_value": "discharge_to_source_concept_name",
+          "type": "categorical"
+        }
+       ],
+      "type": "variables"},
+    {
+     "path": ["ohdsi", "observation_period"],
+     "variables": [
+       {"cell_value": "min_observation_period_start_julian_day",
+         "type": "integer"
+       },
+       {
+          "cell_value": "max_observation_period_end_julian_day",
+           "type": "integer"
+       }
+     ],
+     "type": "variables"
+    },
+    {
+     "path": ["ohdsi", "death"],
+     "variables": [
+       {"cell_value": "death_julian_day",
+         "type": "integer"
+       },
+       {"cell_value": "death_date",
+         "type": "datetime"
+       },
+       {
+         "cell_value": "death_type_concept_name",
+           "type": "categorical"
+         }
+     ],
+     "type": "variables"
+    },
+   {
+      "path": ["ohdsi", "payer_plan"],
+      "type": "categorical_list",
+      "process": "list_position",
+      "field": "plan_source_value",
+      "name": "plan_source_value",
+      "cell_value": "plan_source_value",
+      "description": "plan_source_value"
+    },
+    {
+      "path": ["ohdsi", "condition_occurrence"],
+      "type": "categorical_list",
+      "process": "occurs_in_list",
+      "field": "condition_concept_id",
+      "name": "condition_concept",
+      "label": "condition_concept_id",
+      "cell_value": "condition_concept_id",
+      "description": "condition_concept_name"
+    },
+    {
+      "path": ["ohdsi", "procedure_occurrence"],
+      "type": "categorical_list",
+      "process": "occurs_in_list",
+      "field": "procedure_concept_id",
+      "name": "procedure_concept",
+      "label": "procedure_concept_id",
+      "cell_value": "procedure_concept_id",
+      "description": "procedure_concept_name"
+    },
+    {
+        "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "measurement_concept_id",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+        "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "observation_concept_id",
+                "description": "observation_concept_name"
+            }
+    },
+    {
+        "path": ["ohdsi", "drug_exposure"],
+        "export_path": ["ohdsi", "drug_exposure", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "drug_concept_id",
+                "description": "drug_concept_name"
+            }
+    }
+]

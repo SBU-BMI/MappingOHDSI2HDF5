@@ -17,7 +17,7 @@ select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_
     c2.concept_name as ethnicity_concept_name,
     c2.concept_code as ethnicity_concept_code,
     c3.concept_name as race_concept_name,
-    c3.concept_code as race_concept_code,
+    c3.concept_code as race_concept_code
     from person p
     join concept c1 on c1.concept_id = p.gender_concept_id
     left outer join concept c2 on c2.concept_id = p.ethnicity_concept_id
@@ -79,9 +79,7 @@ select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_vis
       c2.concept_name as visit_type_concept_name,
       c2.concept_code as visit_type_concept_code,
       c3.concept_name as admitting_source_concept_name,
-      c3.concept_code as admitting_source_concept_id,
       c4.concept_name as discharge_to_concept_name,
-      c4.concept_code as discharge_to_concept_id,
       cs.care_site_name
       from visit_occurrence vo
           left outer join care_site cs on cs.care_site_id = vo.care_site_id
@@ -119,14 +117,14 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
       cast(to_char(cast(co.condition_start_date as date), 'J') as int) as condition_start_julian_day,
       c1.concept_name as condition_source_concept_name,
       c1.concept_code as condition_source_concept_code,
-      c1.vocabulary_id as source_condition_vocabulary_id,
+      c1.vocabulary_id as condition_source_vocabulary_id,
       c2.concept_name as condition_concept_name,
       c2.concept_code as condition_concept_code,
       c2.vocabulary_id as condition_vocabulary_id,
       c3.concept_name as condition_type_name,
       c3.concept_code as condition_type_concept_code,
-      c4.concept_name as concept_status_concept_name,
-      c4.concept_code as concept_status_concept_code
+      c4.concept_name as condition_status_concept_name,
+      c4.concept_code as condition_status_concept_code
     from condition_occurrence co 
       join concept c1 on c1.concept_id = co.condition_source_concept_id
       join concept c2 on c2.concept_id = co.condition_concept_id
@@ -196,7 +194,6 @@ from (
           c4.concept_code as unit_concept_code,
           c4.vocabulary_id as unit_concept_vocabulary_id,
           c5.concept_name as qualifier_concept_name,
-          c5.concept_code as qualifier_concept_id,
           vo.visit_start_julian_day
     from observation o
     join map2_visit_occurrence vo on vo.visit_occurrence_id = o.visit_occurrence_id
@@ -271,9 +268,6 @@ create table map2_drug_exposure as
         c4.concept_name as route_concept_name,
         c4.concept_code as route_concept_code,
         c4.vocabulary_id as route_concept_vocabulary_id,
-        c5.concept_name as unit_concept_name,
-        c5.concept_code as unit_concept_code,
-        c5.vocabulary_id as unit_concept_vocabulary_id,
         vo.visit_start_julian_day
       from drug_exposure de
         join map2_visit_occurrence vo on vo.visit_occurrence_id = de.visit_occurrence_id
@@ -281,7 +275,6 @@ create table map2_drug_exposure as
         join concept c2 on c2.concept_id = de.drug_concept_id
         left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
         left outer join concept c4 on c4.concept_id = de.route_concept_id
-        left outer join concept c5 on c5.concept_id = de.dose_unit_concept_id
     ) t join map2_person p on t.person_id = p.person_id) tt 
     ;
 
