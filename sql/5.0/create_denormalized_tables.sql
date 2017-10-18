@@ -198,7 +198,7 @@ from (
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
-        measurement_datetime,
+        cast(cast(m.measurement_date as varchar(10)) || ' ' || m.measurement_time as timestamp) as measurement_datetime,
         c1.concept_name as measurement_source_concept_name, 
         c1.concept_code as measurement_source_concept_code,
         c1.vocabulary_id as source_vocabulary_id,
