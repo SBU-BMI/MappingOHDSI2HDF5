@@ -70,14 +70,8 @@ select *, cast(floor(age_at_visit_start_in_years_fraction) as int) as age_at_vis
       cast(to_char(cast("visit_start_date" as date), 'J') as int) as visit_start_julian_day,
       cast(to_char(cast("visit_end_date" as date), 'J') as int) as visit_end_julian_day from (
       select vo.*, c1.concept_name as visit_concept_name, c2.concept_name as visit_type_concept_name,
-        cast( --create a timestamp
-            cast(vo.visit_start_date as varchar(10)) || ' ' ||
-                case when vo.visit_start_time is null then '' else vo.visit_start_time end as
-            timestamp) as visit_start_datetime, --e5.1 version
-        cast(
-            cast(vo.visit_end_date as varchar(10)) || ' ' ||
-              case when vo.visit_end_time is null then '' else vo.visit_end_time end
-             as timestamp) as visit_end_datetime
+        visit_start_datetime,
+        visit_end_datetime
         from visit_occurrence vo
           join concept c1 on vo.visit_concept_id = c1.concept_id
           join concept c2 on vo.visit_type_concept_id = c2.concept_id) t) tt
