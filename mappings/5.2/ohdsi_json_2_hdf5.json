@@ -1,17 +1,24 @@
 [
     {"path": ["ohdsi", "person"],
       "variables": [
-         {"cell_value": "gender_concept_name",
-          "type": "categorical"
+         {
+           "cell_value": "gender_concept_id",
+           "description": "gender_concept_name",
+           "type": "categorical"
          },
-         {"cell_value":  "race_concept_name",
-          "type": "categorical"
+         {
+           "cell_value":  "race_concept_id",
+           "description":  "race_concept_name",
+           "type": "categorical"
          },
-         {"cell_value": "ethnicity_concept_name",
-          "type": "categorical"
+         {
+           "cell_value": "ethnicity_concept_id",
+           "description": "ethnicity_concept_name",
+           "type": "categorical"
          },
-         {"cell_value":  "birth_julian_day",
-          "type": "integer"
+         {
+           "cell_value":  "birth_julian_day",
+           "type": "integer"
          },
          {
            "cell_value":  "birth_date",
@@ -29,24 +36,30 @@
     },
     {"path": ["ohdsi", "visit_occurrence"],
       "variables": [
-         {"cell_value": "visit_concept_name",
-          "type": "categorical"
-         },
-         {"cell_value": "visit_type_concept_name",
-          "type": "categorical"
-         },
-         {"cell_value": "age_at_visit_start_in_years_int",
-          "type": "integer"
-         },
-         {"cell_value": "age_at_visit_start_in_days",
-          "type": "integer"
+         {
+           "cell_value": "visit_concept_id",
+           "description": "visit_concept_name",
+           "type": "categorical"
          },
          {
-          "cell_value": "visit_start_julian_day",
+           "cell_value": "visit_type_concept_id",
+           "description": "visit_type_concept_name",
+           "type": "categorical"
+         },
+         {
+           "cell_value": "age_at_visit_start_in_years_int",
            "type": "integer"
          },
          {
-          "cell_value": "visit_end_julian_day",
+           "cell_value": "age_at_visit_start_in_days",
+           "type": "integer"
+         },
+         {
+           "cell_value": "visit_start_julian_day",
+           "type": "integer"
+         },
+         {
+           "cell_value": "visit_end_julian_day",
            "type": "integer"
          },
          {
@@ -55,18 +68,20 @@
          },
          {
           "cell_value": "visit_end_datetime",
-           "type": "datetime"
+          "type": "datetime"
          },
          {
           "cell_value": "care_site_name",
           "type": "categorical"
          },
          {
-           "cell_value": "admitting_source_concept_name",
+           "cell_value": "admitting_source_concept_id",
+           "description": "admitting_source_concept_name",
            "type": "categorical"
          },
         {
-          "cell_value": "discharge_to_source_concept_name",
+          "cell_value": "discharge_to_source_concept_id",
+          "description": "discharge_to_source_concept_name",
           "type": "categorical"
         }
        ],
@@ -94,9 +109,10 @@
          "type": "datetime"
        },
        {
-         "cell_value": "death_type_concept_name",
-           "type": "categorical"
-         }
+         "cell_value": "death_type_concept_id",
+         "description": "death_type_concept_name",
+         "type": "categorical"
+       }
      ],
      "type": "variables"
     },
