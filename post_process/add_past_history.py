@@ -5,7 +5,7 @@ import shutil
 from post_process_utilities import generate_person_dict, visit_start_slice, index_annotations
 
 
-def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=False, prefetch_amount=10000):
+def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=False, prefetch_amount=10000, base_path_identifier="/ohdsi/identifiers/person/"):
 
     if make_backup:
         print("Making backup copy of file")
@@ -15,13 +15,17 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
 
     path_to_visit = "/ohdsi/visit_occurrence/"
 
-    visit_concept_name = "visit_concept_name"
+    visit_concept_name = "visit_concept_id"
 
     visit_annotations_path = path_to_visit + "column_annotations"
 
     visit_annotations = f5[visit_annotations_path][...]
 
-    path_to_identifiers = "/ohdsi/identifiers/"
+    if base_path_identifier is None:
+        path_to_identifiers = "/ohdsi/identifiers/"
+    else:
+        path_to_identifiers = base_path_identifier
+
     identifiers_annotations_path = path_to_identifiers + "column_annotations"
 
     identifier_annotations = f5[identifiers_annotations_path][...]
@@ -95,7 +99,6 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
             if rows_to_look_back:
                 past_history = np.sum(prefetched_core_array[i_prefetch-1-rows_to_look_back: i_prefetch-1, :], axis=0)
                 prefetch_past_history_matrix[i_prefetch, :] = past_history
-
 
     past_history_matrix[prefetch_start:prefetch_end, :] = prefetch_past_history_matrix
 

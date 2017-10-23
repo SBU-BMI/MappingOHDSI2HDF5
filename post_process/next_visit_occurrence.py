@@ -35,7 +35,7 @@ import shutil
 from post_process_utilities import index_annotations, generate_person_dict, visit_start_slice
 
 
-def main(hdf5_file_name, make_backup=False):
+def main(hdf5_file_name, make_backup=False, base_path_identifier="/ohdsi/identifiers/person/"):
 
     # Get positions to slice
     if make_backup:
@@ -45,7 +45,7 @@ def main(hdf5_file_name, make_backup=False):
     f5 = h5py.File(hdf5_file_name, "r+")
     path_to_visit = "/ohdsi/visit_occurrence/"
 
-    visit_concept_name = "visit_concept_name"
+    visit_concept_name = "visit_concept_id"
 
     visit_annotations_path = path_to_visit + "column_annotations"
 
@@ -55,7 +55,11 @@ def main(hdf5_file_name, make_backup=False):
 
     slice_visit_start, slice_visit_end = visit_start_slice(visit_annotations)
 
-    path_to_identifiers = "/ohdsi/identifiers/"
+    if base_path_identifier is None:
+        path_to_identifiers = "/ohdsi/identifiers/"
+    else:
+        path_to_identifiers = base_path_identifier
+
     identifiers_annotations_path = path_to_identifiers + "column_annotations"
 
     identifier_annotations = f5[identifiers_annotations_path][...]
