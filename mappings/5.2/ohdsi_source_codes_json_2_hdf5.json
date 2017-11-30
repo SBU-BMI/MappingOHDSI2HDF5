@@ -1,0 +1,24 @@
+[
+   {
+      "path": ["ohdsi", "condition_occurrence"],
+      "export_path": ["ohdsi", "condition_occurrence", "source_concept"],
+      "type": "categorical_list",
+      "process": "occurs_in_list",
+      "field": "condition_source_concept_id",
+      "name": "condition_source_concept",
+      "label": "condition_source_concept_id",
+      "cell_value": "condition_source_concept_id",
+      "description": "condition_source_concept_code"
+    },
+    {
+      "path": ["ohdsi", "procedure_occurrence"],
+      "export_path": ["ohdsi", "procedure_occurrence", "source_concept"],
+      "type": "categorical_list",
+      "process": "occurs_in_list",
+      "field": "procedure_source_concept_id",
+      "name": "procedure_source_concept",
+      "label": "procedure_source_concept_id",
+      "cell_value": "procedure_source_concept_id",
+      "description": "procedure_source_concept_code"
+    }
+]

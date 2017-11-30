@@ -123,6 +123,7 @@ def main(hdf5_file_name, make_backup=False, base_path_identifier="/ohdsi/identif
     f5["/computed/next/position/visit_occurrence/core_array"] = future_visit_positions_array
     f5["/computed/next/position/visit_occurrence/column_annotations"] = visit_concept_slices
 
+
 if __name__ == "__main__":
 
     arg_parse_obj = argparse.ArgumentParser(description="A script for adding next visit details into the HDF5 file " +
