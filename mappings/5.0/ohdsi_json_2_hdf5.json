@@ -21,9 +21,16 @@
       "type": "variables"
     },
     {"path": ["ohdsi", "person"],
-      "export_path": ["ohdsi", "identifiers"],
+      "export_path": ["ohdsi", "identifiers", "person"],
       "variables":
           [{"cell_value": "person_id",
+            "type": "integer"}],
+      "type": "variables"
+    },
+    {"path": ["ohdsi", "visit_occurrence"],
+      "export_path": ["ohdsi", "identifiers", "visit_occurrence"],
+      "variables":
+          [{"cell_value": "visit_occurrence_id",
             "type": "integer"}],
       "type": "variables"
     },
