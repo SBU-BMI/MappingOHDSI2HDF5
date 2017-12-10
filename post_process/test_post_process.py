@@ -29,7 +29,7 @@ class TestAddPastHistory(unittest.TestCase):
         if os.path.exists(self.file_name):
             os.remove(self.file_name)
 
-        shutil.copy("../test/synpuf_ohdsi_combined.hdf5", self.file_name)
+        shutil.copy("../test/synpuf_inpatient_combined_readmission.hdf5", self.file_name)
 
     def test_past_history(self):
 

@@ -22,7 +22,7 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
     visit_annotations = f5[visit_annotations_path][...]
 
     if base_path_identifier is None:
-        path_to_identifiers = "/ohdsi/identifiers/"
+        path_to_identifiers = "/ohdsi/identifiers/person/"
     else:
         path_to_identifiers = base_path_identifier
 
@@ -97,11 +97,10 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
             rows_to_look_back = eligible_visit_past_dates.shape[0]
 
             if rows_to_look_back:
-                past_history = np.sum(prefetched_core_array[i_prefetch-1-rows_to_look_back: i_prefetch-1, :], axis=0)
+                past_history = np.sum(prefetched_core_array[i_prefetch-1 - rows_to_look_back: i_prefetch-1, :], axis=0)
                 prefetch_past_history_matrix[i_prefetch, :] = past_history
 
     past_history_matrix[prefetch_start:prefetch_end, :] = prefetch_past_history_matrix
-
 
 if __name__ == "__main__":
 
