@@ -1,17 +1,24 @@
 [
     {"path": ["ohdsi", "person"],
       "variables": [
-         {"cell_value": "gender_concept_name",
-          "type": "categorical"
+        {
+           "cell_value": "gender_concept_id",
+           "description": "gender_concept_name",
+           "type": "categorical"
          },
-         {"cell_value":  "race_concept_name",
-          "type": "categorical"
+         {
+           "cell_value":  "race_concept_id",
+           "description":  "race_concept_name",
+           "type": "categorical"
          },
-         {"cell_value": "ethnicity_concept_name",
-          "type": "categorical"
+         {
+           "cell_value": "ethnicity_concept_id",
+           "description": "ethnicity_concept_name",
+           "type": "categorical"
          },
-         {"cell_value":  "birth_julian_day",
-          "type": "integer"
+         {
+           "cell_value":  "birth_julian_day",
+           "type": "integer"
          },
          {
            "cell_value":  "birth_date",
@@ -36,11 +43,15 @@
     },
     {"path": ["ohdsi", "visit_occurrence"],
       "variables": [
-         {"cell_value": "visit_concept_name",
-          "type": "categorical"
+         {
+           "cell_value": "visit_concept_id",
+           "description": "visit_concept_name",
+           "type": "categorical"
          },
-         {"cell_value": "visit_type_concept_name",
-          "type": "categorical"
+         {
+           "cell_value": "visit_type_concept_id",
+           "description": "visit_type_concept_name",
+           "type": "categorical"
          },
          {"cell_value": "age_at_visit_start_in_years_int",
           "type": "integer"
