@@ -6,7 +6,8 @@ import add_past_history
 import h5py
 import numpy as np
 
-class TestNextVisit(unittest.TestCase):
+
+class TestNextVisitAtScale(unittest.TestCase):
 
     def setUp(self):
         self.file_name = "../test/synpuf_inpatient_combined_test.hdf5"
@@ -21,7 +22,7 @@ class TestNextVisit(unittest.TestCase):
         next_visit_occurrence.main(self.file_name)
 
 
-class TestAddPastHistoryScale(unittest.TestCase):
+class TestAddPastHistoryAtScale(unittest.TestCase):
 
     def setUp(self):
 
@@ -141,8 +142,35 @@ class TestNextVisit(unittest.TestCase):
 
             ids = f5["/ohdsi/identifiers/person/core_array"][...]
 
-            print(ids)
+            """
+            /computed/next/30_days/visit_occurrence
+            /computed/days/visit_occurrence
+            /computed/days/has/visit_occurrence
+            /computed/position/visit_occurrence
+            """
 
+            #print(ids)
+
+
+class TestAddPastHistory(unittest.TestCase):
+
+    def setUp(self):
+
+        self.filename = "../test/ohdsi_sample.hdf5"
+
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+        build_array_for_past_history(self.filename)
+
+    def test_add_past_history(self):
+
+        add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
+
+        "/computed/past_history/180/ohdsi/visit_occurrence/"
+
+        with h5py.File(self.filename) as f5:
+            pass
 
 if __name__ == '__main__':
     unittest.main()
