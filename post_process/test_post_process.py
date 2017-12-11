@@ -100,8 +100,6 @@ def build_array_for_past_history(file_name):
 
     visit_core_array = np.array(visit)
 
-    print(visit_core_array[:,2:])
-
     visit_column_annotations = np.array(visit_annotations_list)
 
     with h5py.File(file_name, "w") as f5w:
@@ -236,8 +234,53 @@ class TestAddPastHistory(unittest.TestCase):
 
             past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:, 0]
 
-
             self.assertEquals([0, 1, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 1], past_history_visit_array.tolist())
+
+class AddPastReadmissionHistory(unittest.TestCase):
+
+    def setUp(self):
+
+        self.filename = "../test/ohdsi_sample.hdf5"
+
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+        build_array_for_past_history(self.filename)
+
+    def test_past_history_with_readmission(self):
+        """
+           [[1], [1], [5], [5], [5], [5], [6], [9], [9], [9], [10], [20], [20]]
+
+           [
+               [10  20] - 1
+               [60  65] - 1
+               [0   1] - 5
+               [2  10] - 5
+               [20  22] - 5
+               [52  54] - 5
+               [0   2] - 6
+               [1   3] - 9
+               [5  45] - 9
+               [226 228] - 9
+               [1   2] - 10
+               [10  20] - 20
+               [178 182] - 20
+
+           ]
+
+           [0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0]
+
+        """
+
+        next_visit_occurrence.main(self.filename)
+        add_past_history.main(self.filename, "/computed/next/30_days/visit_occurrence/")
+        add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
+
+        with h5py.File(self.filename) as f5:
+            past_30_day_readmission = f5["/computed/past_history/180/computed/next/30_days/visit_occurrence/core_array"][...]
+
+            self.assertEquals([0, 0, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 0], np.ravel(past_30_day_readmission).tolist())
+
 
 if __name__ == '__main__':
     unittest.main()
