@@ -10,48 +10,69 @@ import numpy as np
 class TestNextVisitAtScale(unittest.TestCase):
 
     def setUp(self):
-        self.file_name = "../test/synpuf_inpatient_combined_test.hdf5"
+        self.filename = "../test/synpuf_inpatient_combined_test.hdf5"
 
-        if os.path.exists(self.file_name):
-            os.remove(self.file_name)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
-        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.file_name)
+        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.filename)
 
     def test_calculate_next_visit(self):
 
-        next_visit_occurrence.main(self.file_name)
+        next_visit_occurrence.main(self.filename)
+
+        with h5py.File(self.filename) as f5:
+
+            readmission_sd = f5["/computed/next/30_days/visit_occurrence/core_array"]
+
+            number_of_admissions = readmission_sd.shape[0]
+            number_of_readmissions = np.sum(readmission_sd[...])
+
+            readmission_rate = number_of_admissions / (number_of_readmissions * 1.0)
+
+            self.assertTrue(readmission_rate > 0.1)
 
 
 class TestAddPastHistoryAtScale(unittest.TestCase):
 
     def setUp(self):
 
-        self.file_name = "../test/synpuf_inpatient_combined_test.hdf5"
+        self.filename = "../test/synpuf_inpatient_combined_test.hdf5"
 
-        if os.path.exists(self.file_name):
-            os.remove(self.file_name)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
-        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.file_name)
+        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.filename)
 
     def test_past_history(self):
 
-        add_past_history.main(self.file_name, "/ohdsi/visit_occurrence/")
+        add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
+
+        with h5py.File(self.filename) as f5:
+
+            past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:, 0]
+
+            self.assertTrue(np.sum(past_history_visit_array) > 0)
 
 
-class TestAddNextVisitAndPastHistoryScale(unittest.TestCase):
+class TestAddNextVisitAndPastHistoryAtScale(unittest.TestCase):
 
     def setUp(self):
-        self.file_name = "../test/synpuf_inpatient_combined_test.hdf5"
+        self.filename = "../test/synpuf_inpatient_combined_test.hdf5"
 
-        if os.path.exists(self.file_name):
-            os.remove(self.file_name)
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
-        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.file_name)
+        shutil.copy("../test/synpuf_inpatient_5_combined.hdf5", self.filename)
 
     def test_past_history(self):
-        next_visit_occurrence.main(self.file_name)
-        add_past_history.main(self.file_name, "/computed/next/30_days/visit_occurrence/")
-        add_past_history.main(self.file_name, "/ohdsi/visit_occurrence/")
+        next_visit_occurrence.main(self.filename)
+        add_past_history.main(self.filename, "/computed/next/30_days/visit_occurrence/")
+        add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
+
+        with h5py.File(self.filename) as f5:
+            past_30_day_readmission = f5["/computed/past_history/180/computed/next/30_days/visit_occurrence/core_array"][...]
+            self.assertTrue(np.sum(past_30_day_readmission) > 0)
 
 
 def build_array_for_past_history(file_name):
@@ -195,7 +216,6 @@ class TestAddPastHistory(unittest.TestCase):
 
         add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
 
-
         with h5py.File(self.filename) as f5:
 
             past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:,0]
@@ -221,8 +241,7 @@ class TestAddPastHistory(unittest.TestCase):
                 [10  20]
                 [178 182]
                 
-            ]
-            
+            ]  
             """
 
             self.assertEquals([0, 1, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 1], past_history_visit_array.tolist())
@@ -235,6 +254,7 @@ class TestAddPastHistory(unittest.TestCase):
             past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:, 0]
 
             self.assertEquals([0, 1, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 1], past_history_visit_array.tolist())
+
 
 class AddPastReadmissionHistory(unittest.TestCase):
 
