@@ -15,8 +15,6 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
 
     path_to_visit = "/ohdsi/visit_occurrence/"
 
-    visit_concept_name = "visit_concept_id"
-
     visit_annotations_path = path_to_visit + "column_annotations"
 
     visit_annotations = f5[visit_annotations_path][...]
@@ -37,7 +35,7 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
 
     person_ids = f5[path_to_identifiers + "core_array"][:, slice_person_id[0]:slice_person_id[1]]
     visit_start = f5[path_to_visit + "core_array"][:, slice_visit_start[0]:slice_visit_start[1]]
-    visit_end = f5[path_to_visit + "core_array"][:, slice_visit_end[0]:slice_visit_end[1]]
+    #visit_end = f5[path_to_visit + "core_array"][:, slice_visit_end[0]:slice_visit_end[1]]
 
     person_dict = generate_person_dict(person_ids)
     core_array_to_process = f5[path_to_matrix + "core_array"]
@@ -69,7 +67,7 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
         if prefetch:
 
             if i > 0:
-                past_history_matrix[prefetch_start:prefetch_end,: ] = prefetch_past_history_matrix
+                past_history_matrix[prefetch_start:prefetch_end, :] = prefetch_past_history_matrix
                 prefetch_start = prefetch_end
                 prefetch_end = prefetch_start + prefetch_amount
 
@@ -82,7 +80,6 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
                 prefetch_end = last_person[0][0] - 1
 
             prefetched_core_array = core_array_to_process[prefetch_start:prefetch_end, :]
-
             prefetch_past_history_matrix = np.zeros(shape=(prefetch_end - prefetch_start, number_of_columns))
             prefetch = False
 
@@ -92,15 +89,16 @@ def main(hdf5_file_name, path_to_matrix, days_to_look_back=180, make_backup=Fals
         visit_to_look_back_date = current_visit_start_date - days_to_look_back
 
         if i > person_start:
-            past_visit_start_dates = visit_start[person_start: i-1]
+            past_visit_start_dates = visit_start[person_start: i]     # TODO check
             eligible_visit_past_dates = past_visit_start_dates[past_visit_start_dates >= visit_to_look_back_date]
             rows_to_look_back = eligible_visit_past_dates.shape[0]
 
             if rows_to_look_back:
-                past_history = np.sum(prefetched_core_array[i_prefetch-1 - rows_to_look_back: i_prefetch-1, :], axis=0)
+                past_history = np.sum(prefetched_core_array[i_prefetch - 1 - rows_to_look_back: i_prefetch - 1, :], axis=0)
                 prefetch_past_history_matrix[i_prefetch, :] = past_history
 
     past_history_matrix[prefetch_start:prefetch_end, :] = prefetch_past_history_matrix
+
 
 if __name__ == "__main__":
 
@@ -111,4 +109,4 @@ if __name__ == "__main__":
 
     arg_obj = arg_parse_obj.parse_args()
 
-    main(arg_obj.hdf5_filename, arg_obj.path_to_matrix, arg_obj.days_to_look_back, make_backup=True)
+    main(arg_obj.hdf5_filename, arg_obj.path_to_matrix, int(arg_obj.days_to_look_back), make_backup=True)
