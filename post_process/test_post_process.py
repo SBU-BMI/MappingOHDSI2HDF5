@@ -63,7 +63,7 @@ def build_array_for_past_history(file_name):
     identifier_column_annotations_list = [["person_id"], [""], [""], ["integer"]]
     identifier_column_annotations = np.array(identifier_column_annotations_list)
 
-    identifier_list = [[1], [1], [5], [5], [5], [5], [6], [9], [9], [9], [10]]
+    identifier_list = [[1], [1], [5], [5], [5], [5], [6], [9], [9], [9], [10], [20], [20]]
 
     identifier_core_array = np.array(identifier_list)
 
@@ -94,6 +94,8 @@ def build_array_for_past_history(file_name):
         [1, 1, base_julian_day + 3 + 2, base_julian_day + 3 + 2 + 40],  # 9 -- 8
         [1, 1, base_julian_day + 3 + 2 + 40 + 181, base_julian_day + 3 + 2 + 40 + 181 + 2],  # 9 -- 9
         [1, 1, base_julian_day - 1, base_julian_day],  # 10 -- 10
+        [1, 1, base_julian_day + 10, base_julian_day + 20],
+        [1, 1, base_julian_day + 178, base_julian_day + 182]
     ]
 
     visit_core_array = np.array(visit)
