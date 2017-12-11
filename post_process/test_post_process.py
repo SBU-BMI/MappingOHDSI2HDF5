@@ -78,7 +78,7 @@ def build_array_for_past_history(file_name):
 
     visit_annotations_list = [r1v, r2v, r3v, r4v]
 
-    base_julian_day = 2455268
+    base_julian_day = 0
 
     # Visit annotations
     # 1 [person_id] -- 0 [list index position]
@@ -93,12 +93,14 @@ def build_array_for_past_history(file_name):
         [1, 1, base_julian_day + 1, base_julian_day + 3],  # 9 -- 7
         [1, 1, base_julian_day + 3 + 2, base_julian_day + 3 + 2 + 40],  # 9 -- 8
         [1, 1, base_julian_day + 3 + 2 + 40 + 181, base_julian_day + 3 + 2 + 40 + 181 + 2],  # 9 -- 9
-        [1, 1, base_julian_day - 1, base_julian_day],  # 10 -- 10
+        [1, 1, base_julian_day + 1, base_julian_day + 2],  # 10 -- 10
         [1, 1, base_julian_day + 10, base_julian_day + 20],
         [1, 1, base_julian_day + 178, base_julian_day + 182]
     ]
 
     visit_core_array = np.array(visit)
+
+    print(visit_core_array[:,2:])
 
     visit_column_annotations = np.array(visit_annotations_list)
 
@@ -142,8 +144,6 @@ class TestNextVisit(unittest.TestCase):
 
         with h5py.File(self.filename) as f5:
 
-            ids = f5["/ohdsi/identifiers/person/core_array"][...]
-
             """
             /computed/next/30_days/visit_occurrence
             /computed/days/visit_occurrence
@@ -151,7 +151,35 @@ class TestNextVisit(unittest.TestCase):
             /computed/position/visit_occurrence
             """
 
-            #print(ids)
+            next_30_day_readmissions = f5["/computed/next/30_days/visit_occurrence/core_array"][...]
+            next_30_day_readmissions_list = np.ravel(next_30_day_readmissions).tolist()
+
+            """
+
+                        To determine expected result
+
+                        [[1], [1], [5], [5], [5], [5], [6], [9], [9], [9], [10], [20], [20]]
+
+                        [
+                            [10  20]
+                            [60  65]
+                            [0   1]
+                            [2  10]
+                            [20  22]
+                            [52  54]
+                            [0   2]
+                            [1   3]
+                            [5  45]
+                            [226 228]
+                            [1   2]
+                            [10  20]
+                            [178 182]
+
+                        ]
+
+            """
+
+            self.assertEquals([0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0], next_30_day_readmissions_list)
 
 
 class TestAddPastHistory(unittest.TestCase):
@@ -169,10 +197,47 @@ class TestAddPastHistory(unittest.TestCase):
 
         add_past_history.main(self.filename, "/ohdsi/visit_occurrence/")
 
-        "/computed/past_history/180/ohdsi/visit_occurrence/"
 
         with h5py.File(self.filename) as f5:
-            pass
+
+            past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:,0]
+
+            """
+            
+            To determine expected result
+            
+            [[1], [1], [5], [5], [5], [5], [6], [9], [9], [9], [10], [20], [20]]
+            
+            [
+                [10  20]
+                [60  65]
+                [0   1]
+                [2  10]
+                [20  22]
+                [52  54]
+                [0   2]
+                [1   3]
+                [5  45]
+                [226 228]
+                [1   2]
+                [10  20]
+                [178 182]
+                
+            ]
+            
+            """
+
+            self.assertEquals([0, 1, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 1], past_history_visit_array.tolist())
+
+    def test_add_past_history_with_chunks(self):
+        add_past_history.main(self.filename, "/ohdsi/visit_occurrence/", prefetch_amount=4)
+
+        with h5py.File(self.filename) as f5:
+
+            past_history_visit_array = f5["/computed/past_history/180/ohdsi/visit_occurrence/core_array"][:, 0]
+
+
+            self.assertEquals([0, 1, 0, 1, 2, 3, 0, 0, 1, 0, 0, 0, 1], past_history_visit_array.tolist())
 
 if __name__ == '__main__':
     unittest.main()

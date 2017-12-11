@@ -27,7 +27,7 @@ def generate_person_dict(person_ids):
             starting_new_position = i
             last_person_id = person_id
 
-    person_dict[person_id] = (starting_new_position + 1, i)
+    person_dict[person_id] = (starting_new_position, i)
 
     return person_dict
 
