@@ -3,6 +3,8 @@
 --create a denormalized tables for the main OHDSI table
 --convert date and time separately to date / time
 
+set search_path=synpuf5;
+
 drop table if exists map2_person;
 create table map2_person as 
 select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_day from (
