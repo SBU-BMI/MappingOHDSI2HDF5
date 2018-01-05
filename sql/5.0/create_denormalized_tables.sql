@@ -102,8 +102,8 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
   from (
     select co.*,
       cast(to_char(cast(co.condition_start_date as date), 'J') as int) as condition_start_julian_day,
-      c1.concept_name as source_condition_concept_name, c1.concept_code as source_condition_concept_code,
-        c1.vocabulary_id as source_condition_vocabulary_id,
+      c1.concept_name as condition_source_concept_name, c1.concept_code as condition_source_concept_code,
+        c1.vocabulary_id as condition_source_vocabulary_id,
       c2.concept_name as condition_concept_name, c2.concept_code as condition_concept_code,
         c2.vocabulary_id as condition_vocabulary_id,
       c3.concept_name as condition_type_name
