@@ -3,6 +3,8 @@
 --create a denormalized tables for the main OHDSI table
 --convert date and time separately to date / time
 
+set search_path=synpuf5;
+
 drop table if exists map2_person;
 create table map2_person as 
 select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_day from (
@@ -159,7 +161,7 @@ from (
     from (
     select o.*,
           cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
-          observation_datetime,
+          cast(o.observation_date as timestamp) as observation_datetime,
           c1.concept_name as observation_source_concept_name, 
           c1.concept_code as observation_source_concept_code,
           c1.vocabulary_id as source_vocabulary_id,
