@@ -1,0 +1,37 @@
+[
+    {
+        "batch_id": 1,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_1_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_1_key_order_20180105.json"
+    },
+    {
+        "batch_id": 2,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_2_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_2_key_order_20180105.json"
+    },
+    {
+        "batch_id": 3,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_3_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_3_key_order_20180105.json"
+    },
+    {
+        "batch_id": 4,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_4_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_4_key_order_20180105.json"
+    },
+    {
+        "batch_id": 5,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_5_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_5_key_order_20180105.json"
+    },
+    {
+        "batch_id": 6,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_6_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_6_key_order_20180105.json"
+    },
+    {
+        "batch_id": 7,
+        "data_json_file": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_7_20180105.json.gz",
+        "sort_order_file_name": "/home/janos_hajagos/data/ohdsi2hdf5/ohdsi_mapped_7_key_order_20180105.json"
+    }
+]
