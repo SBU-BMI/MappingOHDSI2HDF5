@@ -15,6 +15,48 @@
     },
     {
       "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "mean"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "mean",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "first_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "first_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "last_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "last_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
         "export_path": ["ohdsi", "observation", "min"],
         "type": "classes_templates",
         "class_type": "variables",

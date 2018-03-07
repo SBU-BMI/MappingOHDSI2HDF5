@@ -14,6 +14,45 @@
     },
     {
       "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "mean"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "mean",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "first_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "first_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "last_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "last_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
         "export_path": ["ohdsi", "measurement", "min"],
         "type": "classes_templates",
         "class_type": "variables",
