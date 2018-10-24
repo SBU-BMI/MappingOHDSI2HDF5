@@ -22,7 +22,7 @@ def main(sql_file_name, connection_string, schema=None):
 
             print(sql_statement)
             sql_to_execute = pre_statement + sql_statement
-            connection.exeute(sql_to_execute)
+            connection.execute(sql_to_execute)
 
 
 if __name__ == "__main__":
