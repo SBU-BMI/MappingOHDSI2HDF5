@@ -32,5 +32,5 @@ if __name__ == "__main__":
     arg_parser_obj.add_argument("-s", dest="schema", default=None)
 
     arg_obj = arg_parser_obj.parse_args()
-    main(sql_file_name=arg_obj.file_name, connection_string=arg_obj.connection_sting, schema=arg_obj.schema)
+    main(sql_file_name=arg_obj.file_name, connection_string=arg_obj.connection_string, schema=arg_obj.schema)
 
