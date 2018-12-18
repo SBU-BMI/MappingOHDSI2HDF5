@@ -279,3 +279,62 @@ create table map2_drug_exposure as
     ;
 
 create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
+
+drop table if exists map2_atc3_concepts;
+create table map2_atc3_concepts as
+select
+	drug.concept_id as drug_concept_id,
+	drug.concept_name as drug_concept_name,
+	atc3.concept_id as atc3_concept_id,
+	atc3.concept_name as atc3_concept_name,
+  atc3.concept_code as atc3_concept_code
+from (
+	select concept_id, concept_name
+	from concept
+	where standard_concept = 'S'
+	  and domain_id = 'Drug'
+	  and invalid_reason is null
+) drug
+inner join concept_ancestor ca on drug.concept_id = ca.descendant_concept_id
+inner join (
+	select concept_id, concept_name, concept_code
+	from concept
+	where vocabulary_id = 'ATC'
+	  and concept_class_id = 'ATC 3rd'
+	  and invalid_reason is null
+)  atc3 on ca.ancestor_concept_id = atc3.concept_id;
+
+drop table if exists map2_atc4_concepts;
+create table map2_atc4_concepts as
+select
+	drug.concept_id as drug_concept_id,
+	drug.concept_name as drug_concept_name,
+	atc4.concept_id as atc4_concept_id,
+	atc4.concept_name as atc4_concept_name,
+  atc4.concept_code as atc4_cocept_code
+from (
+	select concept_id, concept_name
+	from concept
+	where standard_concept = 'S'
+	  and domain_id = 'Drug'
+	  and invalid_reason is null
+) drug
+inner join concept_ancestor ca on drug.concept_id = ca.descendant_concept_id
+inner join (
+	select concept_id, concept_name, concept_code
+	from concept
+	where vocabulary_id = 'ATC'
+	  and concept_class_id = 'ATC 4th'
+	  and invalid_reason is null
+)  atc4 on ca.ancestor_concept_id = atc4.concept_id;
+
+
+drop table if exists map2_atc3_drug_exposure;
+create table map2_atc3_drug_exposure as
+select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc3_concepts ac
+  join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
+
+
+create table map2_atc4_drug_exposure as
+select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc4_concepts ac
+  join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
