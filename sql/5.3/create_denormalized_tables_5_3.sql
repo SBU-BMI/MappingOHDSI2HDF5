@@ -287,7 +287,7 @@ select
 	drug.concept_name as drug_concept_name,
 	atc3.concept_id as atc3_concept_id,
 	atc3.concept_name as atc3_concept_name,
-  atc3.concept_code as atc3_concept_code
+    atc3.concept_code as atc3_concept_code
 from (
 	select concept_id, concept_name
 	from concept
@@ -311,7 +311,7 @@ select
 	drug.concept_name as drug_concept_name,
 	atc4.concept_id as atc4_concept_id,
 	atc4.concept_name as atc4_concept_name,
-  atc4.concept_code as atc4_cocept_code
+    atc4.concept_code as atc4_concept_code
 from (
 	select concept_id, concept_name
 	from concept
