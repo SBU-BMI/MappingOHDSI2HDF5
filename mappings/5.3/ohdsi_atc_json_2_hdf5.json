@@ -1,0 +1,29 @@
+[
+  {
+        "path": ["ohdsi", "drug_exposure", "atc4"],
+        "export_path": ["ohdsi", "drug_exposure", "atc4", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "atc4_concept_id",
+                "description": "atc4_concept_name"
+            }
+    },
+    {
+        "path": ["ohdsi", "drug_exposure", "atc3"],
+        "export_path": ["ohdsi", "drug_exposure", "atc3", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "atc3_concept_id",
+                "description": "atc3_concept_name"
+            }
+    }
+
+]

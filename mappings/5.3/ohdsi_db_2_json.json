@@ -286,6 +286,39 @@
             "route_concept_vocabulary_id",
             "drug_exposure_day_of_visit"
           ]
+        },
+        {
+          "name": "atc4",
+          "table_name": "map2_atc4_drug_exposure",
+          "path": ["ohdsi", "drug_exposure"],
+          "type": "one-to-many-class",
+          "group_by_field": "drug_concept_id",
+          "fields_to_order_by": ["person_id", "visit_occurrence_id", "drug_concept_id", "atc4_concept_code"],
+          "fields_to_include": [
+            "drug_concept_id",
+            "drug_concept_name",
+            "atc4_concept_id",
+            "atc4_concept_name",
+            "atc4_concept_code",
+            "person_id",
+            "visit_occurrence_id"]
+        },
+        {
+          "name": "atc3",
+          "table_name": "map2_atc4_drug_exposure",
+          "path": ["ohdsi", "drug_exposure"],
+          "type": "one-to-many-class",
+          "group_by_field": "drug_concept_id",
+          "fields_to_order_by": ["person_id", "visit_occurrence_id", "drug_concept_id", "atc4_concept_code"],
+          "fields_to_include": [
+            "drug_concept_id",
+            "drug_concept_name",
+            "atc4_concept_id",
+            "atc4_concept_name",
+            "atc4_concept_code",
+            "person_id",
+            "visit_occurrence_id"]
         }
+
       ]
 }

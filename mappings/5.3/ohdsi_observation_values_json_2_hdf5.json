@@ -1,0 +1,100 @@
+[
+   {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "median"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "median",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "mean"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "mean",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "first_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "first_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "last_item"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "last_item",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "min"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "max"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "max",
+                "type": "numeric_list",
+                "cell_value": "value_as_number",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "value_as_concept"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count_categories",
+                "type": "categorical_list",
+                "cell_value": "value_as_concept_name",
+                "description": "observation_concept_name"
+            }
+
+    }
+]
