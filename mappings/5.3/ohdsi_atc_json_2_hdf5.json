@@ -1,7 +1,7 @@
 [
   {
-        "path": ["ohdsi", "drug_exposure", "atc4"],
-        "export_path": ["ohdsi", "drug_exposure", "atc4", "count"],
+        "path": ["ohdsi", "atc4"],
+        "export_path": ["ohdsi", "atc4", "count"],
         "type": "classes_templates",
         "class_type": "variables",
         "class_template":
@@ -13,8 +13,8 @@
             }
     },
     {
-        "path": ["ohdsi", "drug_exposure", "atc3"],
-        "export_path": ["ohdsi", "drug_exposure", "atc3", "count"],
+        "path": ["ohdsi", "atc3"],
+        "export_path": ["ohdsi", "atc3", "count"],
         "type": "classes_templates",
         "class_type": "variables",
         "class_template":
