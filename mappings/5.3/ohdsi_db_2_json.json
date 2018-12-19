@@ -305,17 +305,17 @@
         },
         {
           "name": "atc3",
-          "table_name": "map2_atc4_drug_exposure",
+          "table_name": "map2_atc3_drug_exposure",
           "path": ["ohdsi", "drug_exposure"],
           "type": "one-to-many-class",
           "group_by_field": "drug_concept_id",
-          "fields_to_order_by": ["person_id", "visit_occurrence_id", "drug_concept_id", "atc4_concept_code"],
+          "fields_to_order_by": ["person_id", "visit_occurrence_id", "drug_concept_id", "atc3_concept_code"],
           "fields_to_include": [
             "drug_concept_id",
             "drug_concept_name",
-            "atc4_concept_id",
-            "atc4_concept_name",
-            "atc4_concept_code",
+            "atc3_concept_id",
+            "atc3_concept_name",
+            "atc3_concept_code",
             "person_id",
             "visit_occurrence_id"]
         }
