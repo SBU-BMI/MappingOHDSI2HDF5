@@ -334,7 +334,7 @@ create table map2_atc3_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc3_concepts ac
   join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
 
-
+drop table if exists map2_atc4_drug_exposure;
 create table map2_atc4_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc4_concepts ac
   join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
