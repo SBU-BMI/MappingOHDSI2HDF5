@@ -30,6 +30,7 @@ def main(sql_file_name, connection_string, schema=None):
                     raise
                 trans.commit()
 
+
 if __name__ == "__main__":
     arg_parser_obj = argparse.ArgumentParser()
     arg_parser_obj.add_argument("-f", dest="file_name", default="execute_sql_files.py")
