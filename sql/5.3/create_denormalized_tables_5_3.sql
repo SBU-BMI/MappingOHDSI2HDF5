@@ -328,7 +328,6 @@ inner join (
 	  and invalid_reason is null
 )  atc4 on ca.ancestor_concept_id = atc4.concept_id;
 
-
 drop table if exists map2_atc3_drug_exposure;
 create table map2_atc3_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc3_concepts ac
@@ -338,3 +337,35 @@ drop table if exists map2_atc4_drug_exposure;
 create table map2_atc4_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc4_concepts ac
   join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
+
+
+drop table if exists map2_drug_ingredients;
+create table map2_drug_ingredients as
+with drug_ingredients as (
+  select
+  	drug.concept_id as drug_concept_id,
+  	drug.concept_name as drug_concept_name,
+    drug.concept_code as drug_concept_code,
+  	ing.concept_id as ingredient_concept_id,
+  	ing.concept_name as ingredient_concept_name,
+    ing.concept_code as ingredient_concept_code
+  from (
+  	select concept_id, concept_name, concept_code
+  	from concept
+  	where standard_concept = 'S'
+  	  and domain_id = 'Drug'
+  	  and invalid_reason is null
+  ) drug
+  inner join concept_ancestor ca on drug.concept_id = ca.descendant_concept_id
+  inner join (
+  	select concept_id, concept_name, concept_code
+  	from concept
+  	where vocabulary_id = 'RxNorm'
+  	  and concept_class_id = 'Ingredient'
+  	  and invalid_reason is null
+  )  ing on ca.ancestor_concept_id = ing.concept_id)
+select drug_concept_id, drug_concept_code,drug_concept_name, count(distinct ingredient_concept_code) as n_ingredients,
+  array_agg(distinct ingredient_concept_name) as ingredient_concept_names, array_agg(distinct ingredient_concept_code) as ingredient_concept_codes,
+  array_agg(distinct ingredient_concept_id) as ingredient_concept_ids
+from drug_ingredients
+group by drug_concept_id, drug_concept_code,drug_concept_name;
