@@ -174,7 +174,8 @@ create table map2_observation as
 select tt.*,
   floor(tt.observation_age_in_years_fraction) as observation_age_in_years_int
 from (
-  select t.*, 
+  select t.*,
+    case when has_value_as_number = 0 and has_value_as_concept = 1 then 1 else 0 end as has_value_as_concept_only,
     (t.observation_julian_day - p.birth_julian_day) / 365.25 as observation_age_in_years_fraction, 
     (t.observation_julian_day - p.birth_julian_day) as observation_age_in_days,
     observation_julian_day - visit_start_julian_day as observation_day_of_visit
@@ -194,7 +195,9 @@ from (
           c4.concept_code as unit_concept_code,
           c4.vocabulary_id as unit_concept_vocabulary_id,
           c5.concept_name as qualifier_concept_name,
-          vo.visit_start_julian_day
+          vo.visit_start_julian_day,
+          case when o.value_as_number is not null then 1 else 0 end has_value_as_number,
+          case when c3.concept_code is not null then 1 else 0 end as has_value_as_concept
     from observation o
     join map2_visit_occurrence vo on vo.visit_occurrence_id = o.visit_occurrence_id
     join concept c1 on o.observation_source_concept_id = c1.concept_id
@@ -212,17 +215,18 @@ create table map2_measurement as
 select tt.*,
   floor(tt.measurement_age_in_years_fraction) as measurement_age_in_years_int
 from (
-  select t.*, 
-    (t.measurement_julian_day - p.birth_julian_day) / 365.25 as measurement_age_in_years_fraction, 
+  select t.*,
+   case when has_value_as_number = 0 and has_value_as_concept = 1 then 1 else 0 end as has_value_as_concept_only,
+    (t.measurement_julian_day - p.birth_julian_day) / 365.25 as measurement_age_in_years_fraction,
     (t.measurement_julian_day - p.birth_julian_day) as measurement_age_in_days,
      t.measurement_julian_day - visit_start_julian_day as measurement_day_of_visit
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,
-        c1.concept_name as measurement_source_concept_name, 
+        c1.concept_name as measurement_source_concept_name,
         c1.concept_code as measurement_source_concept_code,
         c1.vocabulary_id as source_vocabulary_id,
-        c2.concept_name as measurement_concept_name, 
+        c2.concept_name as measurement_concept_name,
         c2.concept_code as measurement_concept_code,
         c2.vocabulary_id as concept_vocabulary_id,
         c3.concept_name as value_as_concept_name,
@@ -232,7 +236,9 @@ from (
         c4.concept_code as unit_concept_code,
         c4.vocabulary_id as unit_concept_vocabulary_id,
         c5.concept_name as operator_concept_name,
-        vo.visit_start_julian_day
+        vo.visit_start_julian_day,
+        case when m.value_as_number is not null then 1 else 0 end has_value_as_number,
+        case when c3.concept_code is not null then 1 else 0 end as has_value_as_concept
   from measurement m
   join map2_visit_occurrence vo on vo.visit_occurrence_id = m.visit_occurrence_id
   join concept c1 on m.measurement_source_concept_id = c1.concept_id
