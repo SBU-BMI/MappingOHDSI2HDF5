@@ -375,3 +375,12 @@ select drug_concept_id, drug_concept_code,drug_concept_name, count(distinct ingr
   array_agg(distinct ingredient_concept_id) as ingredient_concept_ids
 from drug_ingredients
 group by drug_concept_id, drug_concept_code,drug_concept_name;
+
+drop table if exists map2_condition_occurrence_hierarchy;
+create table map2_condition_occurrence_hierarchy as
+  select distinct visit_occurrence_id, person_id, c.concept_id as condition_concept_id,
+    c.concept_name as conditon_concept_name
+    from condition_occurrence co
+    join concept_ancestor a on a.descendant_concept_id = co.condition_concept_id
+    join concept c on c.concept_id = a.ancestor_concept_id
+  ;
