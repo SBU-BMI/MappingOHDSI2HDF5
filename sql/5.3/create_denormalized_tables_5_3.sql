@@ -379,8 +379,29 @@ group by drug_concept_id, drug_concept_code,drug_concept_name;
 drop table if exists map2_condition_occurrence_hierarchy;
 create table map2_condition_occurrence_hierarchy as
   select distinct visit_occurrence_id, person_id, c.concept_id as condition_concept_id,
-    c.concept_name as conditon_concept_name
+    c.concept_name as condition_concept_name,
+    c.concept_code as condition_concept_code
     from condition_occurrence co
     join concept_ancestor a on a.descendant_concept_id = co.condition_concept_id
     join concept c on c.concept_id = a.ancestor_concept_id
   ;
+  
+  
+drop table if exists  map2_measurement_numeric;
+create table map2_measurement_numeric as
+  select * from map2_measurement where has_value_as_number = 1;
+
+drop table if exists  map2_measurement_categorical;
+create table map2_measurement_categorical as
+  select * from map2_measurement where has_value_as_concept_only = 1;
+  
+
+drop table if exists map2_observation_numeric;
+create table map2_observation_numeric as
+  select * from map2_observation where has_value_as_number = 1;
+
+drop table if exists  map2_observation_categorical;
+create table map2_observation_categorical as
+  select * from map2_observation where has_value_as_concept_only = 1
+  
+;
