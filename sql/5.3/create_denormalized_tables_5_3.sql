@@ -99,6 +99,14 @@ create table map2_person_visit_occurrence as
     join map2_person p on vo.person_id = p.person_id
 ;
 
+drop table if exists map2_visit_detail;
+create table map2_visit_detail as
+select vd.*, c1.concept_name as visit_detail_concept_name, cs.care_site_name
+  from visit_detail vd
+    join concept c1 on vd.visit_detail_concept_id = c1.concept_id
+    left outer join care_site cs on cs.care_site_id = vd.care_site_id
+;
+
 drop table if exists map2_visit_occurrence_payer_plan;
 create table map2_visit_occurrence_payer_plan as 
   select distinct vo.visit_occurrence_id, ppp.plan_source_value from payer_plan_period ppp
