@@ -294,6 +294,31 @@ create table map2_drug_exposure as
 
 create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
 
+drop table if exists map2_atc2_concepts;
+create table map2_atc2_concepts as
+select
+	drug.concept_id as drug_concept_id,
+	drug.concept_name as drug_concept_name,
+	atc2.concept_id as atc2_concept_id,
+	atc2.concept_name as atc2_concept_name,
+  atc2.concept_code as atc2_concept_code
+from (
+	select concept_id, concept_name
+	from concept
+	where standard_concept = 'S'
+	  and domain_id = 'Drug'
+	  and invalid_reason is null
+) drug
+inner join concept_ancestor ca on drug.concept_id = ca.descendant_concept_id
+inner join (
+	select concept_id, concept_name, concept_code
+	from concept
+	where vocabulary_id = 'ATC'
+	  and concept_class_id = 'ATC 2nd'
+	  and invalid_reason is null
+)  atc2 on ca.ancestor_concept_id = atc2.concept_id;
+
+
 drop table if exists map2_atc3_concepts;
 create table map2_atc3_concepts as
 select
@@ -325,7 +350,7 @@ select
 	drug.concept_name as drug_concept_name,
 	atc4.concept_id as atc4_concept_id,
 	atc4.concept_name as atc4_concept_name,
-    atc4.concept_code as atc4_concept_code
+  atc4.concept_code as atc4_concept_code
 from (
 	select concept_id, concept_name
 	from concept
@@ -342,6 +367,31 @@ inner join (
 	  and invalid_reason is null
 )  atc4 on ca.ancestor_concept_id = atc4.concept_id;
 
+drop table if exists map2_atc5_concepts;
+create table map2_atc5_concepts as
+select
+	drug.concept_id as drug_concept_id,
+	drug.concept_name as drug_concept_name,
+	atc5.concept_id as atc5_concept_id,
+	atc5.concept_name as atc5_concept_name,
+  atc5.concept_code as atc5_concept_code
+from (
+	select concept_id, concept_name
+	from concept
+	where standard_concept = 'S'
+	  and domain_id = 'Drug'
+	  and invalid_reason is null
+) drug
+inner join concept_ancestor ca on drug.concept_id = ca.descendant_concept_id
+inner join (
+	select concept_id, concept_name, concept_code
+	from concept
+	where vocabulary_id = 'ATC'
+	  and concept_class_id = 'ATC 5th'
+	  and invalid_reason is null
+)  atc5 on ca.ancestor_concept_id = atc5.concept_id
+;
+
 drop table if exists map2_atc3_drug_exposure;
 create table map2_atc3_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc3_concepts ac
@@ -351,6 +401,12 @@ drop table if exists map2_atc4_drug_exposure;
 create table map2_atc4_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc4_concepts ac
   join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
+
+drop table if exists map2_atc5_drug_exposure;
+create table map2_atc5_drug_exposure as
+select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc5_concepts ac
+  join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
+
 
 
 drop table if exists map2_drug_ingredients;
