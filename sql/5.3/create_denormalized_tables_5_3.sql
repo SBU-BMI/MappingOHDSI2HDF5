@@ -50,18 +50,18 @@ create table map2_observation_period_visit_occurrence as
 --TODO: left outer join location
 
 drop table if exists map2_death;
-
 create table map2_death as
   select d.*, c.concept_name as death_type_concept_name,
     cast(to_char(cast(d.death_date as date), 'J') as int) as death_julian_day
   from death d join concept c on d.death_type_concept_id = c.concept_id
 ;
 create unique index idx_map2_death_p_id on map2_death(person_id);
-
 drop table if exists map2_death_visit_occurrence;
+create table map2_death_visit_occurrence as
+  select md.*, vo.visit_occurrence_id from map2_death md join visit_occurrence vo on md.person_id = vo.person_id
+    where death_datetime >= vo.visit_start_datetime and death_datetime <= vo.visit_end_datetime+ '6 hour'::interval
+;
 
-create table map2_death_visit_occurrence as 
-  select md.*, vo.visit_occurrence_id from map2_death md join visit_occurrence vo on md.person_id = vo.person_id;
 
 drop table if exists map2_visit_occurrence;
 create table map2_visit_occurrence as
@@ -259,40 +259,6 @@ from (
 
 create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
  
-drop table if exists map2_drug_exposure;
-create table map2_drug_exposure as 
-  select tt.*, floor(drug_exposure_start_age_in_years_fraction) as drug_exposure_start_age_in_years_int from (
-    select t.*,
-        (t.drug_exposure_start_julian_day - p.birth_julian_day) / 365.25 as drug_exposure_start_age_in_years_fraction, 
-        (t.drug_exposure_start_julian_day - p.birth_julian_day) as drug_exposure_start_age_in_days,
-        drug_exposure_start_julian_day - visit_start_julian_day as drug_exposure_day_of_visit 
-    from (
-      select de.*,
-        cast(to_char(cast(de.drug_exposure_start_date as date), 'J') as int) as drug_exposure_start_julian_day,
-        cast(to_char(cast(de.drug_exposure_end_date as date), 'J') as int) as drug_exposure_end_julian_day,
-        c1.concept_name as drug_concept_source_name,
-        c1.concept_code as drug_concept_source_code,
-        c1.vocabulary_id as drug_concept_source_vocabulary_id,
-        c2.concept_name as drug_concept_name,
-        c2.concept_code as drug_concept_code,
-        c2.vocabulary_id as drug_concept_vocabulary_id,
-        c3.concept_name as drug_type_concept_name,
-        c3.concept_code as drug_type_concept_code,
-        c3.vocabulary_id as drug_type_concept_vocabulary_id,
-        c4.concept_name as route_concept_name,
-        c4.concept_code as route_concept_code,
-        c4.vocabulary_id as route_concept_vocabulary_id,
-        vo.visit_start_julian_day
-      from drug_exposure de
-        join map2_visit_occurrence vo on vo.visit_occurrence_id = de.visit_occurrence_id
-        join concept c1 on c1.concept_id = de.drug_source_concept_id
-        join concept c2 on c2.concept_id = de.drug_concept_id
-        left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
-        left outer join concept c4 on c4.concept_id = de.route_concept_id
-    ) t join map2_person p on t.person_id = p.person_id) tt 
-    ;
-
-create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
 
 drop table if exists map2_atc2_concepts;
 create table map2_atc2_concepts as
@@ -392,6 +358,56 @@ inner join (
 )  atc5 on ca.ancestor_concept_id = atc5.concept_id
 ;
 
+drop table if exists map2_atc5_flattened;
+create table map2_atc5_flattened as
+select * from (
+    select drug_concept_id, array_agg(distinct atc5_concept_code) as array_atc5_concept_codes,
+           string_agg(distinct atc5_concept_code, '||' order by atc5_concept_code) as atc5_concept_codes,
+           string_agg(distinct atc5_concept_code || '|' ||  atc5_concept_name, '||'
+               order by  atc5_concept_code || '|' ||  atc5_concept_name) as atc5_concept_codes_with_descriptions
+    from sbm_covid19_hi_cdm_build.map2_atc5_concepts group by drug_concept_id) t order by atc5_concept_codes
+;
+
+drop table if exists map2_drug_exposure;
+create table map2_drug_exposure as
+  select tt.*, floor(drug_exposure_start_age_in_years_fraction) as drug_exposure_start_age_in_years_int from (
+    select t.*,
+        (t.drug_exposure_start_julian_day - p.birth_julian_day) / 365.25 as drug_exposure_start_age_in_years_fraction,
+        (t.drug_exposure_start_julian_day - p.birth_julian_day) as drug_exposure_start_age_in_days,
+        drug_exposure_start_julian_day - visit_start_julian_day as drug_exposure_day_of_visit
+    from (
+      select de.*,
+        cast(to_char(cast(de.drug_exposure_start_date as date), 'J') as int) as drug_exposure_start_julian_day,
+        cast(to_char(cast(de.drug_exposure_end_date as date), 'J') as int) as drug_exposure_end_julian_day,
+        c1.concept_name as drug_concept_source_name,
+        c1.concept_code as drug_concept_source_code,
+        c1.vocabulary_id as drug_concept_source_vocabulary_id,
+        c2.concept_name as drug_concept_name,
+        c2.concept_code as drug_concept_code,
+        c2.vocabulary_id as drug_concept_vocabulary_id,
+        c3.concept_name as drug_type_concept_name,
+        c3.concept_code as drug_type_concept_code,
+        c3.vocabulary_id as drug_type_concept_vocabulary_id,
+        c4.concept_name as route_concept_name,
+        c4.concept_code as route_concept_code,
+        c4.vocabulary_id as route_concept_vocabulary_id,
+        vo.visit_start_julian_day,
+        m2a5f.atc5_concept_codes,
+        m2a5f.atc5_concept_codes_with_descriptions
+      from drug_exposure de
+        join map2_visit_occurrence vo on vo.visit_occurrence_id = de.visit_occurrence_id
+        join concept c1 on c1.concept_id = de.drug_source_concept_id
+        join concept c2 on c2.concept_id = de.drug_concept_id
+        left outer join concept c3 on c3.concept_id = de.drug_type_concept_id
+        left outer join concept c4 on c4.concept_id = de.route_concept_id
+        left outer join map2_atc5_flattened m2a5f on de.drug_concept_id = m2a5f.drug_concept_id
+    ) t join map2_person p on t.person_id = p.person_id) tt
+    ;
+
+create index idx_map2_drug_exposure on map2_drug_exposure(visit_occurrence_id);
+
+
+
 drop table if exists map2_atc3_drug_exposure;
 create table map2_atc3_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc3_concepts ac
@@ -407,7 +423,13 @@ create table map2_atc5_drug_exposure as
 select distinct ac.*, de.person_id, de.visit_occurrence_id from map2_atc5_concepts ac
   join drug_exposure de on ac.drug_concept_id = de.drug_concept_id;
 
-
+drop table if exists map2_atc5_flattened_drug_exposure;
+create table map2_atc5_flattened_drug_exposure as
+select distinct de.person_id, de.visit_occurrence_id, de.atc5_concept_codes, de.atc5_concept_codes_with_descriptions,
+                de.drug_exposure_start_datetime
+                from map2_drug_exposure de
+  where de.atc5_concept_codes is not null;
+;
 
 drop table if exists map2_drug_ingredients;
 create table map2_drug_ingredients as
@@ -439,6 +461,7 @@ select drug_concept_id, drug_concept_code,drug_concept_name, count(distinct ingr
   array_agg(distinct ingredient_concept_id) as ingredient_concept_ids
 from drug_ingredients
 group by drug_concept_id, drug_concept_code,drug_concept_name;
+
 
 drop table if exists map2_condition_occurrence_hierarchy;
 create table map2_condition_occurrence_hierarchy as
