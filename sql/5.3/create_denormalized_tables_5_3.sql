@@ -186,7 +186,8 @@ from (
     case when has_value_as_number = 0 and has_value_as_concept = 1 then 1 else 0 end as has_value_as_concept_only,
     (t.observation_julian_day - p.birth_julian_day) / 365.25 as observation_age_in_years_fraction, 
     (t.observation_julian_day - p.birth_julian_day) as observation_age_in_days,
-    observation_julian_day - visit_start_julian_day as observation_day_of_visit
+    observation_julian_day - visit_start_julian_day as observation_day_of_visit,
+    extract(epoch from observation_datetime) as observation_epoch
     from (
     select o.*,
           cast(to_char(cast(o.observation_date as date), 'J') as int) as observation_julian_day,
@@ -227,7 +228,8 @@ from (
    case when has_value_as_number = 0 and has_value_as_concept = 1 then 1 else 0 end as has_value_as_concept_only,
     (t.measurement_julian_day - p.birth_julian_day) / 365.25 as measurement_age_in_years_fraction,
     (t.measurement_julian_day - p.birth_julian_day) as measurement_age_in_days,
-     t.measurement_julian_day - visit_start_julian_day as measurement_day_of_visit
+     t.measurement_julian_day - visit_start_julian_day as measurement_day_of_visit,
+     extract(epoch from measurement_datetime) as measurement_epoch
   from (
   select m.*,
         cast(to_char(cast(m.measurement_date as date), 'J') as int) as measurement_julian_day,

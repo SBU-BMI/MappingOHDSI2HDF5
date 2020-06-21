@@ -43,6 +43,20 @@
     },
     {
       "path": ["ohdsi", "observation"],
+        "export_path": ["ohdsi", "observation", "first_time"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "observation_epoch",
+                "description": "observation_concept_name"
+            }
+
+    },
+    {
+      "path": ["ohdsi", "observation"],
         "export_path": ["ohdsi", "observation", "last_item"],
         "type": "classes_templates",
         "class_type": "variables",

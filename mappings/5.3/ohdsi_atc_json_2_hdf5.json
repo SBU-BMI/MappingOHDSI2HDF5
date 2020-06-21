@@ -1,5 +1,18 @@
 [
   {
+        "path": ["ohdsi", "atc5"],
+        "export_path": ["ohdsi", "atc5", "count"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "count",
+                "type": "numeric_list",
+                "cell_value": "atc5_concept_id",
+                "description": "atc5_concept_name"
+            }
+  },
+  {
         "path": ["ohdsi", "atc4"],
         "export_path": ["ohdsi", "atc4", "count"],
         "type": "classes_templates",

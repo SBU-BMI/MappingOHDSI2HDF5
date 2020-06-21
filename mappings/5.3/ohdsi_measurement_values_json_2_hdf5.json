@@ -40,6 +40,19 @@
     },
     {
       "path": ["ohdsi", "measurement"],
+        "export_path": ["ohdsi", "measurement", "first_time"],
+        "type": "classes_templates",
+        "class_type": "variables",
+        "class_template":
+            {
+                "process": "min",
+                "type": "numeric_list",
+                "cell_value": "measurement_epoch",
+                "description": "measurement_concept_name"
+            }
+    },
+    {
+      "path": ["ohdsi", "measurement"],
         "export_path": ["ohdsi", "measurement", "last_item"],
         "type": "classes_templates",
         "class_type": "variables",
