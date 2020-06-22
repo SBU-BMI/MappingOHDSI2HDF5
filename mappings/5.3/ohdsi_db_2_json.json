@@ -213,7 +213,8 @@
                 "unit_concept_code",
                 "unit_concept_vocabulary_id",
                 "qualifier_concept_name",
-                "observation_day_of_visit"
+                "observation_day_of_visit",
+                "observation_epoch"
               ]
         },
         {
@@ -256,7 +257,8 @@
                 "unit_concept_code",
                 "unit_concept_vocabulary_id",
                 "operator_concept_name",
-                "measurement_day_of_visit"
+                "measurement_day_of_visit",
+                "measurement_epoch"
               ]
         },
         {
