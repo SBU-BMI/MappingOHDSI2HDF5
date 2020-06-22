@@ -48,7 +48,7 @@
         "class_type": "variables",
         "class_template":
             {
-                "process": "min",
+                "process": "first_item",
                 "type": "numeric_list",
                 "cell_value": "observation_epoch",
                 "description": "observation_concept_name"
