@@ -40,7 +40,7 @@
     },
     {
       "path": ["ohdsi", "measurement"],
-        "export_path": ["ohdsi", "measurement", "first_time"],
+        "export_path": ["ohdsi", "measurement", "first_item_time"],
         "type": "classes_templates",
         "class_type": "variables",
         "class_template":
