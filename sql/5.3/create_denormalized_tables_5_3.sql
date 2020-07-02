@@ -260,7 +260,7 @@ from (
   left outer join concept c4 on m.unit_concept_id = c4.concept_id 
   left outer join concept c5 on m.operator_concept_id = c5.concept_id) t
   join map2_person p on p.person_id = t.person_id) tt
-  where measurment_concept_id > 0
+  where measurement_concept_id > 0
   ;
 
 create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
