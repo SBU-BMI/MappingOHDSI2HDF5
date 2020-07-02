@@ -140,6 +140,7 @@ select *, cast(floor(tt.condition_start_age_in_years_fraction) as int) as condit
       left outer join concept c4 on c4.concept_id = co.condition_status_concept_id
       ) t
       join map2_person p on p.person_id = t.person_id) tt
+      where condition_concept_id > 0
     ;
 
 create index idx_map2_cond_occur on map2_condition_occurrence(visit_occurrence_id);
@@ -173,6 +174,7 @@ create table map2_procedure_occurrence as
         left outer join concept c4 on c4.concept_id = po.modifier_concept_id) t
         join map2_person p on t.person_id = p.person_id        
         ) tt
+        where procedure_concept_id > 0
         ;
         
 create index idx_map2_proc_occur on map2_procedure_occurrence(visit_occurrence_id);
@@ -215,6 +217,7 @@ from (
     left outer join concept c4 on o.unit_concept_id = c4.concept_id 
     left outer join concept c5 on o.qualifier_concept_id = c5.concept_id) t
    join map2_person p on t.person_id = p.person_id) tt
+   where observation_concept_id > 0
 ;
 
 create index idx_map2_observation on map2_observation(visit_occurrence_id);
@@ -257,6 +260,7 @@ from (
   left outer join concept c4 on m.unit_concept_id = c4.concept_id 
   left outer join concept c5 on m.operator_concept_id = c5.concept_id) t
   join map2_person p on p.person_id = t.person_id) tt
+  where measurment_concept_id > 0
   ;
 
 create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
