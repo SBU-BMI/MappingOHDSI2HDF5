@@ -371,7 +371,7 @@ select * from (
            string_agg(distinct atc5_concept_code, '||' order by atc5_concept_code) as atc5_concept_codes,
            string_agg(distinct atc5_concept_code || '|' ||  atc5_concept_name, '||'
                order by  atc5_concept_code || '|' ||  atc5_concept_name) as atc5_concept_codes_with_descriptions
-    from sbm_covid19_hi_cdm_build.map2_atc5_concepts group by drug_concept_id) t order by atc5_concept_codes
+    from map2_atc5_concepts group by drug_concept_id) t order by atc5_concept_codes
 ;
 
 drop table if exists map2_drug_exposure;
