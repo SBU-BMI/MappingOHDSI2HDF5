@@ -359,7 +359,7 @@ drop table if exists map2_atc5_flattened;
 create table map2_atc5_flattened as
 select t.*, tt.array_atc5_concept_codes, tt.atc5_concept_codes from (
     select drug_concept_id,
-           listagg(distinct atc5_concept_codes_with_description)
+           listagg(distinct atc5_concept_codes_with_description using parameters on_overflow='TRUNCATE', delimiter='||')
             as atc5_concept_codes_with_descriptions
     from
          (select drug_concept_id, atc5_concept_code, atc5_concept_name,
@@ -369,8 +369,8 @@ select t.*, tt.array_atc5_concept_codes, tt.atc5_concept_codes from (
          group by drug_concept_id) t
    join (
        select drug_concept_id,
-              listagg(distinct atc5_concept_code) as array_atc5_concept_codes,
-              listagg(distinct atc5_concept_code) as atc5_concept_codes from
+              listagg(distinct atc5_concept_code  using parameters on_overflow='TRUNCATE', delimiter='||') as array_atc5_concept_codes,
+              listagg(distinct atc5_concept_code  using parameters on_overflow='TRUNCATE', delimiter='||') as atc5_concept_codes from
               (select drug_concept_id, atc5_concept_code
                  from map2_atc5_concepts
          order by drug_concept_id, atc5_concept_code) a5tt
@@ -469,11 +469,11 @@ select d0.drug_concept_id, d0.drug_concept_code, d0.drug_concept_name, ingredien
 from
      drug_ingredients d0
      join
-     (select drug_concept_id, listagg(distinct left(ingredient_concept_name, 16)) as ingredient_concept_names,
+     (select drug_concept_id, listagg(distinct left(ingredient_concept_name, 64) using parameters on_overflow='TRUNCATE') as ingredient_concept_names,
              count(distinct ingredient_concept_code) as n_ingredients
         from  drug_ingredients group by drug_concept_id) d1 on d0.drug_concept_id = d1.drug_concept_id
      join (
-        select drug_concept_id, listagg(distinct ingredient_concept_code) as ingredient_concept_codes
+        select drug_concept_id, listagg(distinct ingredient_concept_code  using parameters on_overflow='TRUNCATE') as ingredient_concept_codes
         from drug_ingredients group by drug_concept_id) d2 on d0.drug_concept_id = d2.drug_concept_id
     join (
         select drug_concept_id, listagg(distinct ingredient_concept_id) as ingredient_concept_ids
