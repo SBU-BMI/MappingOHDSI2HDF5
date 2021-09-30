@@ -3,6 +3,7 @@
 --create a denormalized tables for the main OHDSI table
 --convert date and time separately to date / time
 
+
 drop table if exists map2_person;
 create table map2_person as 
 select t.*, cast(to_char(cast(birth_date as date), 'J') as int) as birth_julian_day from (
@@ -266,14 +267,16 @@ from (
 create index idx_map2_measurement on map2_measurement(visit_occurrence_id);
  
 
-drop table if exists map2_atc2_concepts;
-create table map2_atc2_concepts as
+drop table if exists map2_atc2_concepts_tree;
+create table map2_atc2_concepts_tree as
 select
 	drug.concept_id as drug_concept_id,
 	drug.concept_name as drug_concept_name,
 	atc2.concept_id as atc2_concept_id,
 	atc2.concept_name as atc2_concept_name,
-  atc2.concept_code as atc2_concept_code
+    atc2.concept_code as atc2_concept_code,
+    ca.min_levels_of_separation,
+    ca.max_levels_of_separation
 from (
 	select concept_id, concept_name
 	from concept
@@ -290,15 +293,27 @@ inner join (
 	  and invalid_reason is null
 )  atc2 on ca.ancestor_concept_id = atc2.concept_id;
 
+drop table if exists map2_atc2_concepts ;
+create table map2_atc2_concepts as
+    select atc.* from map2_atc2_concepts_tree atc join
+        (
+            select drug_concept_id, min(min_levels_of_separation) as min_min_levels_of_separation from map2_atc2_concepts_tree
+            group by drug_concept_id
+        ) x
+        on atc.drug_concept_id = x.drug_concept_id and atc.min_levels_of_separation = x.min_min_levels_of_separation
+order by drug_concept_id, atc2_concept_code
+;
 
-drop table if exists map2_atc3_concepts;
-create table map2_atc3_concepts as
+drop table if exists map2_atc3_concepts_tree;
+create table map2_atc3_concepts_tree as
 select
 	drug.concept_id as drug_concept_id,
 	drug.concept_name as drug_concept_name,
 	atc3.concept_id as atc3_concept_id,
 	atc3.concept_name as atc3_concept_name,
-    atc3.concept_code as atc3_concept_code
+    atc3.concept_code as atc3_concept_code,
+    ca.min_levels_of_separation,
+    ca.max_levels_of_separation
 from (
 	select concept_id, concept_name
 	from concept
@@ -315,14 +330,28 @@ inner join (
 	  and invalid_reason is null
 )  atc3 on ca.ancestor_concept_id = atc3.concept_id;
 
-drop table if exists map2_atc4_concepts;
-create table map2_atc4_concepts as
+
+drop table if exists map2_atc3_concepts ;
+create table map2_atc3_concepts as
+    select atc.* from map2_atc3_concepts_tree atc join
+        (
+            select drug_concept_id, min(min_levels_of_separation) as min_min_levels_of_separation from map2_atc3_concepts_tree
+            group by drug_concept_id
+        ) x
+        on atc.drug_concept_id = x.drug_concept_id and atc.min_levels_of_separation = x.min_min_levels_of_separation
+order by drug_concept_id, atc3_concept_code
+;
+
+drop table if exists map2_atc4_concepts_tree;
+create table map2_atc4_concepts_tree as
 select
 	drug.concept_id as drug_concept_id,
 	drug.concept_name as drug_concept_name,
 	atc4.concept_id as atc4_concept_id,
 	atc4.concept_name as atc4_concept_name,
-  atc4.concept_code as atc4_concept_code
+    atc4.concept_code as atc4_concept_code,
+    ca.min_levels_of_separation,
+    ca.max_levels_of_separation
 from (
 	select concept_id, concept_name
 	from concept
@@ -339,14 +368,27 @@ inner join (
 	  and invalid_reason is null
 )  atc4 on ca.ancestor_concept_id = atc4.concept_id;
 
-drop table if exists map2_atc5_concepts;
-create table map2_atc5_concepts as
+drop table if exists map2_atc4_concepts ;
+create table map2_atc4_concepts as
+    select atc.* from map2_atc4_concepts_tree atc join
+        (
+            select drug_concept_id, min(min_levels_of_separation) as min_min_levels_of_separation from map2_atc4_concepts_tree
+            group by drug_concept_id
+        ) x
+        on atc.drug_concept_id = x.drug_concept_id and atc.min_levels_of_separation = x.min_min_levels_of_separation
+order by drug_concept_id, atc4_concept_code
+;
+
+drop table if exists map2_atc5_concepts_tree;
+create table map2_atc5_concepts_tree as
 select
 	drug.concept_id as drug_concept_id,
 	drug.concept_name as drug_concept_name,
 	atc5.concept_id as atc5_concept_id,
 	atc5.concept_name as atc5_concept_name,
-  atc5.concept_code as atc5_concept_code
+    atc5.concept_code as atc5_concept_code,
+    ca.min_levels_of_separation,
+    ca.max_levels_of_separation
 from (
 	select concept_id, concept_name
 	from concept
@@ -363,6 +405,19 @@ inner join (
 	  and invalid_reason is null
 )  atc5 on ca.ancestor_concept_id = atc5.concept_id
 ;
+
+
+drop table if exists map2_atc5_concepts ;
+create table map2_atc5_concepts as
+    select atc.* from map2_atc5_concepts_tree atc join
+        (
+            select drug_concept_id, min(min_levels_of_separation) as min_min_levels_of_separation from map2_atc5_concepts_tree
+            group by drug_concept_id
+        ) x
+        on atc.drug_concept_id = x.drug_concept_id and atc.min_levels_of_separation = x.min_min_levels_of_separation
+order by drug_concept_id, atc5_concept_code
+;
+
 
 drop table if exists map2_atc5_flattened;
 create table map2_atc5_flattened as
