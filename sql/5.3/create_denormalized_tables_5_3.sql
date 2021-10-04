@@ -407,8 +407,8 @@ inner join (
 ;
 
 
-drop table if exists map2_atc5_concepts ;
-create table map2_atc5_concepts as
+drop table if exists t1_map2_atc5_concepts ;
+create table t1_map2_atc5_concepts as
     select atc.* from map2_atc5_concepts_tree atc join
         (
             select drug_concept_id, min(min_levels_of_separation) as min_min_levels_of_separation from map2_atc5_concepts_tree
@@ -416,6 +416,16 @@ create table map2_atc5_concepts as
         ) x
         on atc.drug_concept_id = x.drug_concept_id and atc.min_levels_of_separation = x.min_min_levels_of_separation
 order by drug_concept_id, atc5_concept_code
+;
+
+--Drop secondary ingredients
+drop table if exists map2_atc5_concepts ;
+create table map2_atc5_concepts as
+select * from (
+select a5.*, case when x.concept_id_1 is not null then 1 else 0 end as to_exclude from t1_map2_atc5_concepts a5 left outer join (
+    select concept_id_1,
+        concept_id_2 from concept_relationship where relationship_id = 'ATC - RxNorm sec up' and invalid_reason is null
+    ) x on x.concept_id_1 = a5.atc5_concept_id and x.concept_id_2 = a5.drug_concept_id) xx where xx.to_exclude = 0
 ;
 
 
